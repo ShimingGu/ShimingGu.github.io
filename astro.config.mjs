@@ -2,4 +2,13 @@
 import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
-export default defineConfig({});
+export default defineConfig({
+  site: 'https://shiminggu.github.io',
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'zh'],
+    routing: {
+      prefixDefaultLocale: true,
+    },
+  },
+});

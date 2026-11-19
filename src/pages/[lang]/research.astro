@@ -1,0 +1,83 @@
+---
+import Base from '../../layouts/Base.astro';
+import TopicCard from '../../components/TopicCard.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import PubItem from '../../components/PubItem.astro';
+import { profile } from '../../data/profile';
+import { topics, ongoing } from '../../data/research';
+import { publications, preprints } from '../../data/publications';
+import { useTranslations } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+---
+
+<Base title={`${t('research.title')} · ${profile.name[lang]}`}>
+  <section class="container section">
+    <div class="section-head">
+      <p class="kicker">{t('research.kicker')}</p>
+      <h1 class="section-title" style="font-size: clamp(2rem, 5vw, 2.8rem);">
+        {t('research.title')}
+      </h1>
+    </div>
+
+    <h2 style="font-size: 1.2rem; margin-bottom: 1.25rem;">{t('research.topics')}</h2>
+    <div class="grid grid-2">
+      {topics.map((topic) => <TopicCard topic={topic} lang={lang} />)}
+    </div>
+  </section>
+
+  <section class="container section">
+    <div class="section-head">
+      <p class="kicker">Publications</p>
+      <h2 class="section-title">{t('research.pubs')}</h2>
+    </div>
+    <div class="pub-list">
+      {publications.map((p) => <PubItem pub={p} lang={lang} />)}
+    </div>
+  </section>
+
+  <section class="container section">
+    <div class="section-head">
+      <p class="kicker">Preprints</p>
+      <h2 class="section-title">{t('research.preprints')}</h2>
+    </div>
+    {
+      preprints.length > 0 ? (
+        <div class="pub-list">
+          {preprints.map((p) => (
+            <PubItem pub={p} lang={lang} />
+          ))}
+        </div>
+      ) : (
+        <div class="card dashed-card empty-state">
+          <p>{t('research.preprintsEmpty')}</p>
+          <p class="hint">
+            <code>{t('research.preprintsHint')}</code>
+          </p>
+        </div>
+      )
+    }
+  </section>
+
+  <section class="container section">
+    <div class="section-head">
+      <p class="kicker">Ongoing</p>
+      <h2 class="section-title">{t('research.ongoing')}</h2>
+    </div>
+    <div class="grid grid-2">
+      {ongoing.map((project) => <ProjectCard project={project} lang={lang} />)}
+      <div class="card dashed-card empty-state">
+        <p>{t('research.ongoingEmpty')}</p>
+        <p class="hint">
+          <code>{t('research.ongoingHint')}</code>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>

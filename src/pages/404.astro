@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+const tz = useTranslations('zh');
+---
+
+<Base title="404 · Shiming Gu">
+  <section class="container section" style="text-align: center; padding-block: 6rem;">
+    <p class="kicker">404</p>
+    <h1 class="section-title">{t('notfound.title')} · {tz('notfound.title')}</h1>
+    <p class="muted">{t('notfound.desc')}</p>
+    <p class="muted">{tz('notfound.desc')}</p>
+    <p style="margin-top: 2rem;">
+      <a class="btn btn-primary" href={getRelativeLocaleUrl('en', '')}>{t('common.backHome')}</a>
+      <a class="btn" href={getRelativeLocaleUrl('zh', '')} style="margin-left: 0.75rem;">
+        {tz('common.backHome')}
+      </a>
+    </p>
+  </section>
+</Base>

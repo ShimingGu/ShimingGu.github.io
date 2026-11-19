@@ -1,0 +1,114 @@
+---
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const zh = lang === 'zh';
+
+const labels = {
+  z: zh ? '红移 z' : 'Redshift z',
+  h0: 'H₀ [km/s/Mpc]',
+  om: 'Ωₘ',
+  dc: zh ? '共动距离' : 'Comoving distance',
+  dl: zh ? '光度距离' : 'Luminosity distance',
+  da: zh ? '角直径距离' : 'Angular diameter distance',
+  lookback: zh ? '回溯时间' : 'Lookback time',
+  age: zh ? 'z 处宇宙年龄' : 'Age at z',
+  note: zh
+    ? '平坦 ΛCDM，忽略辐射；数值积分（Simpson）。'
+    : 'Flat ΛCDM, radiation neglected; Simpson integration.',
+};
+---
+
+<div id="cosmo-calc">
+  <div class="widget-row">
+    <div>
+      <label for="cc-z">{labels.z}</label>
+      <input id="cc-z" type="number" step="0.01" min="0" max="20" value="1" />
+    </div>
+    <div>
+      <label for="cc-h0">{labels.h0}</label>
+      <input id="cc-h0" type="number" step="0.1" min="1" max="200" value="67.4" />
+    </div>
+    <div>
+      <label for="cc-om">{labels.om}</label>
+      <input id="cc-om" type="number" step="0.001" min="0.001" max="0.999" value="0.315" />
+    </div>
+  </div>
+  <div class="calc-grid">
+    <div class="calc-out">
+      <span class="label">{labels.dc}</span>
+      <span class="value" id="cc-dc">—</span><span class="unit">Mpc</span>
+    </div>
+    <div class="calc-out">
+      <span class="label">{labels.dl}</span>
+      <span class="value" id="cc-dl">—</span><span class="unit">Mpc</span>
+    </div>
+    <div class="calc-out">
+      <span class="label">{labels.da}</span>
+      <span class="value" id="cc-da">—</span><span class="unit">Mpc</span>
+    </div>
+    <div class="calc-out">
+      <span class="label">{labels.lookback}</span>
+      <span class="value" id="cc-lb">—</span><span class="unit">Gyr</span>
+    </div>
+    <div class="calc-out">
+      <span class="label">{labels.age}</span>
+      <span class="value" id="cc-age">—</span><span class="unit">Gyr</span>
+    </div>
+  </div>
+  <p class="faint mono" style="font-size: 0.72rem; margin: 0.9rem 0 0;">{labels.note}</p>
+</div>
+
+<script>
+  const root = document.getElementById('cosmo-calc');
+  if (root) {
+    const $ = (id: string) => root.querySelector('#' + id) as HTMLInputElement | HTMLElement;
+    const zIn = $('cc-z') as HTMLInputElement;
+    const h0In = $('cc-h0') as HTMLInputElement;
+    const omIn = $('cc-om') as HTMLInputElement;
+
+    const C = 299792.458;
+    const MPC_KM = 3.085677581e19;
+    const GYR_S = 3.15576e16;
+
+    const simpson = (f: (x: number) => number, a: number, b: number, n = 2000) => {
+      const h = (b - a) / n;
+      let s = f(a) + f(b);
+      for (let i = 1; i < n; i++) s += f(a + i * h) * (i % 2 ? 4 : 2);
+      return (s * h) / 3;
+    };
+
+    const fmt = (x: number) => (x >= 1000 ? x.toFixed(0) : x >= 100 ? x.toFixed(1) : x.toFixed(2));
+
+    const compute = () => {
+      const z = parseFloat(zIn.value);
+      const H0 = parseFloat(h0In.value);
+      const Om = parseFloat(omIn.value);
+      const out = ['cc-dc', 'cc-dl', 'cc-da', 'cc-lb', 'cc-age'].map((id) => $(id));
+      if (!isFinite(z) || z < 0 || !isFinite(H0) || H0 <= 0 || !isFinite(Om) || Om <= 0 || Om >= 1) {
+        out.forEach((el) => (el.textContent = '—'));
+        return;
+      }
+      const Ol = 1 - Om;
+      const E = (zz: number) => Math.sqrt(Om * Math.pow(1 + zz, 3) + Ol);
+      const DH = C / H0;
+      const DC = DH * simpson((zz) => 1 / E(zz), 0, z);
+      const DL = DC * (1 + z);
+      const DA = DC / (1 + z);
+      const tH = MPC_KM / H0;
+      const lookback = (tH * simpson((zz) => 1 / ((1 + zz) * E(zz)), 0, z)) / GYR_S;
+      const a0 = 1 / (1 + z);
+      const ageInt = simpson((a) => 1 / (a * E(1 / a - 1)), 1e-9, a0);
+      const age = (tH * ageInt) / GYR_S;
+      const vals = [DC, DL, DA, lookback, age];
+      out.forEach((el, i) => (el.textContent = fmt(vals[i])));
+    };
+
+    [zIn, h0In, omIn].forEach((el) => el.addEventListener('input', compute));
+    compute();
+  }
+</script>

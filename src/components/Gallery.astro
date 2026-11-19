@@ -1,0 +1,78 @@
+---
+import type { Photo } from '../data/photos';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  photos: Photo[];
+  lang: Lang;
+}
+
+const { photos, lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class="gallery" id="gallery">
+  {
+    photos.map((p, i) => (
+      <figure data-index={i} tabindex="0" role="button" aria-label={p.alt[lang]}>
+        <img src={p.src} alt={p.alt[lang]} loading="lazy" />
+        {p.caption && <figcaption>{p.caption[lang]}</figcaption>}
+      </figure>
+    ))
+  }
+</div>
+
+<dialog class="lightbox" id="lightbox" aria-label={t('photo.title')}>
+  <button class="lightbox-btn lightbox-close" aria-label={t('photo.close')}>✕</button>
+  <button class="lightbox-btn lightbox-prev" aria-label={t('photo.prev')}>‹</button>
+  <img id="lightbox-img" src="" alt="" />
+  <button class="lightbox-btn lightbox-next" aria-label={t('photo.next')}>›</button>
+  <p class="lightbox-caption" id="lightbox-caption"></p>
+</dialog>
+
+<script>
+  const gallery = document.getElementById('gallery');
+  const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+  const img = document.getElementById('lightbox-img') as HTMLImageElement | null;
+  const cap = document.getElementById('lightbox-caption');
+  const figs = Array.from(gallery?.querySelectorAll('figure') ?? []);
+
+  if (dialog && img && cap && figs.length > 0) {
+    let idx = 0;
+
+    const show = (i: number) => {
+      idx = (i + figs.length) % figs.length;
+      const im = figs[idx].querySelector('img')!;
+      img.src = im.src;
+      img.alt = im.alt;
+      cap.textContent = figs[idx].querySelector('figcaption')?.textContent ?? '';
+    };
+
+    const open = (i: number) => {
+      show(i);
+      dialog.showModal();
+    };
+
+    figs.forEach((f, i) => {
+      f.addEventListener('click', () => open(i));
+      f.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          open(i);
+        }
+      });
+    });
+
+    dialog.querySelector('.lightbox-close')?.addEventListener('click', () => dialog.close());
+    dialog.querySelector('.lightbox-prev')?.addEventListener('click', () => show(idx - 1));
+    dialog.querySelector('.lightbox-next')?.addEventListener('click', () => show(idx + 1));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(idx - 1);
+      if (e.key === 'ArrowRight') show(idx + 1);
+    });
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  }
+</script>

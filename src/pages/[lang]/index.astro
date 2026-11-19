@@ -1,0 +1,203 @@
+---
+import Base from '../../layouts/Base.astro';
+import PubItem from '../../components/PubItem.astro';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { profile } from '../../data/profile';
+import { publications } from '../../data/publications';
+import { useTranslations } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const zh = lang === 'zh';
+const t = useTranslations(lang);
+const recent = publications.slice(0, 3);
+const researchUrl = getRelativeLocaleUrl(lang, 'research');
+const photographyUrl = getRelativeLocaleUrl(lang, 'photography');
+const widgetsUrl = getRelativeLocaleUrl(lang, 'widgets');
+const hasRole = profile.role[lang] !== '';
+const hasAffiliation = profile.affiliation[lang] !== '';
+---
+
+<Base title={`${profile.name[lang]} — ${zh ? '个人主页' : 'Personal Website'}`}>
+  <section class="container hero">
+    <div>
+      <p class="kicker">
+        {zh ? '宇宙学 · 弱引力透镜 · 科学智能' : 'Cosmology · Weak lensing · AI for science'}
+      </p>
+      <h1>
+        {profile.name.en}<span class="zh-name">{profile.name.zh}</span>
+      </h1>
+      {
+        (hasRole || hasAffiliation) && (
+          <p class="role">
+            {hasRole && <strong>{profile.role[lang]}</strong>}
+            {hasRole && hasAffiliation && ' · '}
+            {hasAffiliation && profile.affiliation[lang]}
+          </p>
+        )
+      }
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={researchUrl}>{t('hero.cta.research')}</a>
+        <a class="btn" href={profile.email ? `mailto:${profile.email}` : '#contact'}>
+          {t('hero.cta.contact')}
+        </a>
+      </div>
+    </div>
+    <svg class="hero-orbit" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="coreGrad">
+          <stop offset="0%" stop-color="#e8edf8"></stop>
+          <stop offset="100%" stop-color="#a78bfa"></stop>
+        </radialGradient>
+      </defs>
+      <g class="orbit-ring">
+        <ellipse cx="100" cy="100" rx="88" ry="34" fill="none" stroke="rgba(125,211,252,.35)" stroke-width="1"></ellipse>
+        <circle cx="188" cy="100" r="4" fill="#7dd3fc"></circle>
+      </g>
+      <g class="orbit-ring orbit-ring-2">
+        <ellipse cx="100" cy="100" rx="60" ry="60" fill="none" stroke="rgba(167,139,250,.3)" stroke-width="1" stroke-dasharray="3 5"></ellipse>
+        <circle cx="100" cy="40" r="3" fill="#a78bfa"></circle>
+      </g>
+      <circle cx="100" cy="100" r="14" fill="url(#coreGrad)"></circle>
+    </svg>
+  </section>
+
+  <section class="container section" id="about">
+    <div class="section-head">
+      <p class="kicker">About</p>
+      <h2 class="section-title">{t('home.about')}</h2>
+    </div>
+    <div class="grid grid-2">
+      <div>
+        <p>{profile.bio[lang]}</p>
+        <h3 style="font-size: 0.95rem; margin-top: 1.5rem;">{t('home.interests')}</h3>
+        <div class="chips">
+          {profile.interests.map((i) => <span class="chip">{i[lang]}</span>)}
+        </div>
+      </div>
+      <div class="card" id="contact">
+        <dl class="info-list">
+          {
+            hasRole && (
+              <div>
+                <dt>{t('home.position')}</dt>
+                <dd>{profile.role[lang]}</dd>
+              </div>
+            )
+          }
+          {
+            hasAffiliation && (
+              <div>
+                <dt>{t('home.affiliation')}</dt>
+                <dd>{profile.affiliation[lang]}</dd>
+              </div>
+            )
+          }
+          {
+            profile.location[lang] && (
+              <div>
+                <dt>{t('home.location')}</dt>
+                <dd>{profile.location[lang]}</dd>
+              </div>
+            )
+          }
+          {
+            profile.email && (
+              <div>
+                <dt>{t('common.email')}</dt>
+                <dd>
+                  <a href={`mailto:${profile.email}`}>{profile.email}</a>
+                </dd>
+              </div>
+            )
+          }
+          <div>
+            <dt>Links</dt>
+            <dd>
+              {profile.links.github && (
+                <a href={profile.links.github} target="_blank" rel="noopener">GitHub</a>
+              )}
+              {profile.links.scholar && (
+                <>
+                  {' · '}
+                  <a href={profile.links.scholar} target="_blank" rel="noopener">Scholar</a>
+                </>
+              )}
+              {profile.links.orcid && (
+                <>
+                  {' · '}
+                  <a href={profile.links.orcid} target="_blank" rel="noopener">ORCID</a>
+                </>
+              )}
+              {profile.links.arxiv && (
+                <>
+                  {' · '}
+                  <a href={profile.links.arxiv} target="_blank" rel="noopener">arXiv</a>
+                </>
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt>{t('common.cv')}</dt>
+            <dd>
+              {
+                profile.cv ? (
+                  <a href={profile.cv}>{t('common.cv')} (PDF)</a>
+                ) : (
+                  t('common.cvNote')
+                )
+              }
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="container section">
+    <div class="section-head" style="display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;">
+      <div>
+        <p class="kicker">Publications</p>
+        <h2 class="section-title">{t('home.recent')}</h2>
+      </div>
+      <a href={researchUrl} class="mono" style="font-size: 0.8rem;">{t('home.viewAll')} →</a>
+    </div>
+    <div class="pub-list">
+      {recent.map((p) => <PubItem pub={p} lang={lang} />)}
+    </div>
+  </section>
+
+  <section class="container section">
+    <div class="section-head">
+      <p class="kicker">Explore</p>
+      <h2 class="section-title">{t('home.explore')}</h2>
+    </div>
+    <div class="grid grid-3">
+      <a class="card-link" href={researchUrl}>
+        <article class="card">
+          <h3>{t('home.explore.research')}</h3>
+          <p>{t('home.explore.researchDesc')}</p>
+          <span class="card-arrow">→</span>
+        </article>
+      </a>
+      <a class="card-link" href={photographyUrl}>
+        <article class="card">
+          <h3>{t('home.explore.photography')}</h3>
+          <p>{t('home.explore.photographyDesc')}</p>
+          <span class="card-arrow">→</span>
+        </article>
+      </a>
+      <a class="card-link" href={widgetsUrl}>
+        <article class="card">
+          <h3>{t('home.explore.widgets')}</h3>
+          <p>{t('home.explore.widgetsDesc')}</p>
+          <span class="card-arrow">→</span>
+        </article>
+      </a>
+    </div>
+  </section>
+</Base>

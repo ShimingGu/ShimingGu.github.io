@@ -1,0 +1,67 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { profile } from '../data/profile';
+import { useTranslations, switchLangPath } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const path = Astro.url.pathname;
+const home = getRelativeLocaleUrl(lang, '');
+
+const items = [
+  { href: home, label: t('nav.home') },
+  { href: getRelativeLocaleUrl(lang, 'research'), label: t('nav.research') },
+  { href: getRelativeLocaleUrl(lang, 'photography'), label: t('nav.photography') },
+  { href: getRelativeLocaleUrl(lang, 'widgets'), label: t('nav.widgets') },
+];
+
+function isActive(href: string): boolean {
+  const p = path.replace(/\/$/, '');
+  const target = href.replace(/\/$/, '');
+  return target === home.replace(/\/$/, '') ? p === target : p.startsWith(target);
+}
+---
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="nav-logo" href={home}>
+      {profile.name.en}<span class="zh-name">{profile.name.zh}</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label={t('nav.toggle')}>
+      ☰
+    </button>
+    <nav id="nav-links" class="nav-links" aria-label="Main">
+      {
+        items.map((item) => (
+          <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+      <div class="lang-switch">
+        <a href={switchLangPath(path, 'en')} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+        <a href={switchLangPath(path, 'zh')} aria-current={lang === 'zh' ? 'true' : undefined}>中文</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector('.nav-toggle');
+  const links = document.getElementById('nav-links');
+  btn?.addEventListener('click', () => {
+    const open = links?.classList.toggle('open') ?? false;
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  links?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      links.classList.remove('open');
+      btn?.setAttribute('aria-expanded', 'false');
+    }),
+  );
+</script>

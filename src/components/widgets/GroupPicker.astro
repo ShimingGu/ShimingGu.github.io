@@ -1,0 +1,116 @@
+---
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const zh = lang === 'zh';
+
+const labels = {
+  names: zh ? '名单（每行一个名字）' : 'Name list (one per line)',
+  placeholder: zh ? '张三\n李四\n王五\n…' : 'Alice\nBob\nCarol\n…',
+  groups: zh ? '分组' : 'Groups',
+  winners: zh ? '抽签' : 'Winners',
+  nGroups: zh ? '组数' : 'Groups',
+  nWinners: zh ? '人数' : 'Winners',
+  run: zh ? '开始' : 'Shuffle',
+  empty: zh ? '请先粘贴名单，每行一个名字。' : 'Paste a name list first, one name per line.',
+  group: (i: number) => (zh ? `第 ${i} 组` : `Group ${i}`),
+  lucky: zh ? '幸运儿' : 'Lucky winners',
+};
+---
+
+<div id="group-picker">
+  <div style="margin-bottom: 1rem;">
+    <label for="gp-names">{labels.names}</label>
+    <textarea id="gp-names" placeholder={labels.placeholder}></textarea>
+  </div>
+  <div class="widget-actions">
+    <div class="segmented" role="group">
+      <button type="button" data-mode="groups" aria-pressed="true">{labels.groups}</button>
+      <button type="button" data-mode="winners" aria-pressed="false">{labels.winners}</button>
+    </div>
+    <div style="width: 110px;">
+      <label for="gp-n" id="gp-n-label">{labels.nGroups}</label>
+      <input id="gp-n" type="number" min="1" max="99" value="3" />
+    </div>
+    <button type="button" class="btn btn-primary" id="gp-run" style="align-self: flex-end;">
+      {labels.run}
+    </button>
+  </div>
+  <div class="picker-results" id="gp-results"></div>
+</div>
+
+<script>
+  const root = document.getElementById('group-picker');
+  if (root) {
+    const namesEl = root.querySelector('#gp-names') as HTMLTextAreaElement;
+    const nEl = root.querySelector('#gp-n') as HTMLInputElement;
+    const nLabel = root.querySelector('#gp-n-label') as HTMLElement;
+    const results = root.querySelector('#gp-results') as HTMLElement;
+    const runBtn = root.querySelector('#gp-run') as HTMLButtonElement;
+    const modeBtns = Array.from(root.querySelectorAll('.segmented button')) as HTMLButtonElement[];
+    const zh = document.documentElement.lang.startsWith('zh');
+    const L = {
+      nGroups: zh ? '组数' : 'Groups',
+      nWinners: zh ? '人数' : 'Winners',
+      empty: zh ? '请先粘贴名单，每行一个名字。' : 'Paste a name list first, one name per line.',
+      group: (i: number) => (zh ? `第 ${i} 组` : `Group ${i}`),
+      lucky: zh ? '幸运儿' : 'Lucky winners',
+    };
+
+    let mode: 'groups' | 'winners' = 'groups';
+
+    modeBtns.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        mode = btn.dataset.mode as 'groups' | 'winners';
+        modeBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        nLabel.textContent = mode === 'groups' ? L.nGroups : L.nWinners;
+      }),
+    );
+
+    const shuffle = <T,>(arr: T[]): T[] => {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+
+    const card = (title: string, names: string[]) => {
+      const div = document.createElement('div');
+      div.className = 'picker-group';
+      const head = document.createElement('span');
+      head.className = 'group-name';
+      head.textContent = title;
+      const body = document.createElement('span');
+      body.textContent = names.join(' · ');
+      div.append(head, body);
+      return div;
+    };
+
+    runBtn.addEventListener('click', () => {
+      results.replaceChildren();
+      const names = [...new Set(namesEl.value.split('\n').map((s) => s.trim()).filter(Boolean))];
+      const n = Math.max(1, Math.min(99, parseInt(nEl.value, 10) || 1));
+      if (names.length === 0) {
+        const p = document.createElement('p');
+        p.className = 'muted';
+        p.textContent = L.empty;
+        results.append(p);
+        return;
+      }
+      const shuffled = shuffle(names);
+      if (mode === 'winners') {
+        results.append(card(L.lucky, shuffled.slice(0, n)));
+      } else {
+        const groups: string[][] = Array.from({ length: Math.min(n, shuffled.length) }, () => []);
+        shuffled.forEach((name, i) => groups[i % groups.length].push(name));
+        groups.forEach((g, i) => results.append(card(L.group(i + 1), g)));
+      }
+    });
+  }
+</script>

@@ -1,0 +1,29 @@
+---
+import type { Project } from '../data/research';
+import StatusBadge from './StatusBadge.astro';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  project: Project;
+  lang: Lang;
+}
+
+const { project, lang } = Astro.props;
+---
+
+<article class="card">
+  <div style="margin-bottom: 0.9rem;">
+    <StatusBadge status={project.status} lang={lang} />
+  </div>
+  <h3>{project.title[lang]}</h3>
+  <p>{project.description[lang]}</p>
+  {
+    project.highlights && (
+      <ul class="muted" style="margin: 0; padding-left: 1.2rem; font-size: 0.92rem;">
+        {project.highlights.map((h) => (
+          <li style="margin-bottom: 0.3rem;">{h[lang]}</li>
+        ))}
+      </ul>
+    )
+  }
+</article>

@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+import CosmoCalc from '../../components/widgets/CosmoCalc.astro';
+import GroupPicker from '../../components/widgets/GroupPicker.astro';
+import { profile } from '../../data/profile';
+import { widgets } from '../../data/widgets';
+import { useTranslations } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const registry = {
+  'cosmo-calc': CosmoCalc,
+  'group-picker': GroupPicker,
+} as Record<string, typeof CosmoCalc>;
+---
+
+<Base title={`${t('widgets.title')} · ${profile.name[lang]}`}>
+  <section class="container section">
+    <div class="section-head">
+      <p class="kicker">{t('widgets.kicker')}</p>
+      <h1 class="section-title" style="font-size: clamp(2rem, 5vw, 2.8rem);">
+        {t('widgets.title')}
+      </h1>
+    </div>
+
+    {
+      widgets.map((w) => {
+        const Widget = registry[w.id];
+        return (
+          <section class="widget" style="margin-bottom: 1.25rem;">
+            <div class="widget-head">
+              <h3>{w.title[lang]}</h3>
+              <p>{w.desc[lang]}</p>
+            </div>
+            {Widget && <Widget lang={lang} />}
+          </section>
+        );
+      })
+    }
+
+    <div class="card dashed-card empty-state">
+      <p>{t('widgets.add')}</p>
+      <p class="hint">{t('widgets.addDesc')}</p>
+    </div>
+  </section>
+</Base>

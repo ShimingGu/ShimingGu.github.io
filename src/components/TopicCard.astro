@@ -1,0 +1,23 @@
+---
+import type { Topic } from '../data/research';
+import StatusBadge from './StatusBadge.astro';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  topic: Topic;
+  lang: Lang;
+}
+
+const { topic, lang } = Astro.props;
+---
+
+<article class="card">
+  <div style="margin-bottom: 0.9rem;">
+    <StatusBadge status={topic.status} lang={lang} />
+  </div>
+  <h3>{topic.title[lang]}</h3>
+  <p>{topic.summary[lang]}</p>
+  <div class="chips">
+    {topic.tags.map((tag) => <span class="chip">{tag}</span>)}
+  </div>
+</article>

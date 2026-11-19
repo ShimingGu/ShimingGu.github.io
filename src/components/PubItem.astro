@@ -1,0 +1,63 @@
+---
+import type { Pub } from '../data/publications';
+import StatusBadge from './StatusBadge.astro';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  pub: Pub;
+  lang: Lang;
+}
+
+const { pub, lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<article class="pub">
+  <div class="pub-year">{pub.year}</div>
+  <div>
+    <h3 class="pub-title">{pub.title}</h3>
+    <p class="pub-authors">
+      {
+        pub.authors.map((a, i) => (
+          <>
+            {i > 0 && ', '}
+            {a === 'Shiming Gu' ? <strong>{a}</strong> : a}
+          </>
+        ))
+      }
+    </p>
+    <div class="pub-meta">
+      <StatusBadge status={pub.status} lang={lang} />
+      {pub.journal && <span class="journal">{pub.journal}</span>}
+      {pub.note && <span class="muted">{pub.note[lang]}</span>}
+      <span class="pub-links">
+        {
+          pub.arxiv && (
+            <a href={`https://arxiv.org/abs/${pub.arxiv}`} target="_blank" rel="noopener">
+              {t('research.arxiv')}
+            </a>
+          )
+        }
+        {
+          pub.arxiv && (
+            <a
+              href={`https://ui.adsabs.harvard.edu/abs/arXiv:${pub.arxiv}`}
+              target="_blank"
+              rel="noopener"
+            >
+              {t('research.ads')}
+            </a>
+          )
+        }
+        {
+          pub.doi && (
+            <a href={`https://doi.org/${pub.doi}`} target="_blank" rel="noopener">
+              {t('research.doi')}
+            </a>
+          )
+        }
+      </span>
+    </div>
+  </div>
+</article>

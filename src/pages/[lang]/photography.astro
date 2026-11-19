@@ -24,7 +24,10 @@ const t = useTranslations(lang);
     </div>
     {
       photos.length > 0 ? (
-        <Gallery photos={photos} lang={lang} />
+        <>
+          <Gallery photos={photos} lang={lang} />
+          <p class="photo-note">{t('photo.aiNote')}</p>
+        </>
       ) : (
         <div class="card dashed-card empty-state">
           <p>{t('photo.empty')}</p>

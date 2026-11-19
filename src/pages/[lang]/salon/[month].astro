@@ -169,9 +169,15 @@ const other = otherLang(lang);
       </section>
     )
   }
+
+  <script
+    type="application/json"
+    id="salon-session-data"
+    set:html={JSON.stringify({ month, entries: clientEntries, organizerEmail }).replace(/</g, '\\u003c')}
+  />
 </SalonBase>
 
-<script define:vars={{ month, entries: clientEntries, organizerEmail }}>
+<script>
   import {
     checkFields,
     checkNew,
@@ -182,6 +188,9 @@ const other = otherLang(lang);
   } from '../../../lib/salon';
   import { salonUi } from '../../../i18n/salon';
 
+  const { month, entries, organizerEmail } = JSON.parse(
+    document.getElementById('salon-session-data')!.textContent!,
+  );
   const lang = document.documentElement.lang.startsWith('zh') ? 'zh' : 'en';
   const other = lang === 'zh' ? 'en' : 'zh';
   const t = salonUi[lang];

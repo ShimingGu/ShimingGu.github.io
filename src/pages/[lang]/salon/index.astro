@@ -43,12 +43,19 @@ for (const year of SALON_YEARS) {
     <div class="cal-grid" id="cal-grid"></div>
     <p class="rules">{t.rules}</p>
   </section>
+
+  <script
+    type="application/json"
+    id="salon-cal-data"
+    set:html={JSON.stringify({ stats, years: SALON_YEARS }).replace(/</g, '\\u003c')}
+  />
 </SalonBase>
 
-<script define:vars={{ stats, years: SALON_YEARS }}>
+<script>
   import { secondFriday, monthKey } from '../../../lib/salon';
   import { salonUi } from '../../../i18n/salon';
 
+  const { stats, years } = JSON.parse(document.getElementById('salon-cal-data')!.textContent!);
   const lang = document.documentElement.lang.startsWith('zh') ? 'zh' : 'en';
   const t = salonUi[lang];
   const grid = document.getElementById('cal-grid')!;

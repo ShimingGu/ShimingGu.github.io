@@ -1,6 +1,5 @@
 ---
 import type { Project } from '../data/research';
-import StatusBadge from './StatusBadge.astro';
 import type { Lang } from '../i18n/ui';
 
 interface Props {
@@ -12,9 +11,6 @@ const { project, lang } = Astro.props;
 ---
 
 <article class="card">
-  <div style="margin-bottom: 0.9rem;">
-    <StatusBadge status={project.status} lang={lang} />
-  </div>
   <h3>{project.title[lang]}</h3>
   <p>{project.description[lang]}</p>
   {

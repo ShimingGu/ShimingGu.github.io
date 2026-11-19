@@ -518,18 +518,6 @@ main {
   background: rgba(251, 191, 36, 0.08);
 }
 
-.badge-ongoing {
-  color: var(--green);
-  border-color: rgba(52, 211, 153, 0.4);
-  background: rgba(52, 211, 153, 0.08);
-}
-
-.badge-planned {
-  color: var(--muted);
-  border-color: var(--line-strong);
-  background: rgba(148, 163, 184, 0.06);
-}
-
 /* ---------- about / info list ---------- */
 
 .info-list {
@@ -561,6 +549,52 @@ main {
 
 .info-list dd a {
   color: var(--cyan);
+}
+
+/* ---------- topic cards ---------- */
+
+.topic-technical {
+  font-size: 0.82rem;
+  color: var(--faint);
+  border-left: 2px solid var(--line-strong);
+  padding-left: 0.8rem;
+  margin: 0.9rem 0;
+  line-height: 1.65;
+}
+
+.topic-refs {
+  margin-top: 0.9rem;
+}
+
+.ref-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.ref-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ref-links a {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.18rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ref-links a:hover {
+  color: var(--cyan);
+  border-color: rgba(125, 211, 252, 0.45);
 }
 
 /* ---------- publications ---------- */

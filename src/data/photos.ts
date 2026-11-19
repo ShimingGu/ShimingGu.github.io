@@ -1,7 +1,8 @@
 // ============================================================
 // 摄影作品 —— 把图片放进 public/photos/，在下面登记即可。
 // src 以 /photos/ 开头；caption 选填。
-// 当前两张为旧站样片，替换成你自己的作品即可。
+// 当前选片来自 Desktop/Photo/processed（2026 Banff / Hexi / Victoria），
+// 已缩至 1600px、去除 EXIF、饱和度微调；替换或增删直接改这里。
 // ============================================================
 
 import type { Localized } from './profile';
@@ -14,36 +15,99 @@ export interface Photo {
 
 export const photos: Photo[] = [
   {
-    src: '/photos/ss01.jpg',
+    src: '/photos/banff-mirror.jpg',
     alt: {
-      en: 'Calm harbour at dusk with a crescent moon, birds and silhouetted cranes',
-      zh: '暮色中的平静港湾，新月、飞鸟与起重机剪影',
+      en: 'Snow peaks doubled in the still water of a mountain lake',
+      zh: '雪山倒影折进平静的高山湖面',
     },
-    caption: {
-      en: 'Dusk over the harbour.',
-      zh: '港湾暮色。',
-    },
+    caption: { en: 'Still water, doubled mountains.', zh: '静水把山影折成双份。' },
   },
   {
-    src: '/photos/ss02.jpg',
+    src: '/photos/banff-stars.jpg',
     alt: {
-      en: 'Dramatic night clouds above an illuminated vessel and harbour lights',
-      zh: '灯火通明的船只与港口灯光上空戏剧性的夜云',
+      en: 'Star-filled night sky above a rocky riverbed and silhouetted pines',
+      zh: '河滩乱石与松树剪影之上的满天星斗',
     },
-    caption: {
-      en: 'Night clouds over the shipyard.',
-      zh: '船厂上空的夜云。',
-    },
+    caption: { en: 'Stars over the river stones.', zh: '河滩乱石之上的星空。' },
   },
   {
-    src: '/photos/ss03.jpg',
+    src: '/photos/banff-chipmunk.jpg',
     alt: {
-      en: 'The ferry Pride of the Tyne in warm evening light',
-      zh: '暖色夕照中的渡轮 Pride of the Tyne',
+      en: 'A chipmunk pausing on a fallen log',
+      zh: '倒木上停顿的花栗鼠',
     },
-    caption: {
-      en: 'Golden hour on the Tyne.',
-      zh: '泰恩河上的黄金时刻。',
+    caption: { en: 'A chipmunk pauses on a fallen log.', zh: '倒木上停顿的花栗鼠。' },
+  },
+  {
+    src: '/photos/banff-grizzly.jpg',
+    alt: {
+      en: 'A grizzly bear grazing on grass, undisturbed',
+      zh: '旁若无人觅食的灰熊',
     },
+    caption: { en: 'Grizzly grazing, undisturbed.', zh: '旁若无人觅食的灰熊。' },
+  },
+  {
+    src: '/photos/banff-train.jpg',
+    alt: {
+      en: 'A freight train passing below Castle Mountain',
+      zh: '城堡山下驶过的货运列车',
+    },
+    caption: { en: 'A freight train below Castle Mountain.', zh: '城堡山下的货运列车。' },
+  },
+  {
+    src: '/photos/banff-bench.jpg',
+    alt: {
+      en: 'Two people on a bench beneath a towering rocky peak',
+      zh: '高耸岩峰下长椅上的两个人',
+    },
+    caption: { en: 'Two people, one very big mountain.', zh: '两个人，和一座很大的山。' },
+  },
+  {
+    src: '/photos/hexi-salt-rails.jpg',
+    alt: {
+      en: 'Old rails leading into the mirror-like Chaka Salt Lake',
+      zh: '茶卡盐湖：旧铁轨伸进天空之镜',
+    },
+    caption: { en: 'Rails into the sky mirror, Chaka Salt Lake.', zh: '茶卡盐湖：铁轨伸进天空之镜。' },
+  },
+  {
+    src: '/photos/hexi-stupas.jpg',
+    alt: {
+      en: 'A row of white Buddhist stupas against a pale sky',
+      zh: '淡色天空下一字排开的白塔',
+    },
+    caption: { en: 'White stupas in a row.', zh: '一字排开的白塔。' },
+  },
+  {
+    src: '/photos/hexi-danxia.jpg',
+    alt: {
+      en: 'Layered Danxia ridges glowing in late afternoon light',
+      zh: '暮光里发亮的丹霞层脊',
+    },
+    caption: { en: 'Danxia ridges in late light.', zh: '暮光里的丹霞脊线。' },
+  },
+  {
+    src: '/photos/hexi-goose.jpg',
+    alt: {
+      en: 'A goose coming in to land on glassy water, reflection below',
+      zh: '雁落镜面，倒影相随',
+    },
+    caption: { en: 'A goose lands on glass.', zh: '雁落镜面。' },
+  },
+  {
+    src: '/photos/victoria-orcas.jpg',
+    alt: {
+      en: 'Orcas surfacing side by side off Victoria',
+      zh: '维多利亚外海并肩浮出的虎鲸',
+    },
+    caption: { en: 'Orcas surfacing off Victoria.', zh: '维多利亚外海浮出的虎鲸。' },
+  },
+  {
+    src: '/photos/victoria-empress.jpg',
+    alt: {
+      en: 'The Empress hotel facade with a Canadian flag above',
+      zh: '旗帜之下的帝后酒店立面',
+    },
+    caption: { en: 'The Empress under a flag.', zh: '旗帜下的帝后酒店。' },
   },
 ];

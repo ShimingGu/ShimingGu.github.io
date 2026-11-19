@@ -1,11 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
 import TopicCard from '../../components/TopicCard.astro';
-import ProjectCard from '../../components/ProjectCard.astro';
 import PubItem from '../../components/PubItem.astro';
 import { profile } from '../../data/profile';
-import { topics, ongoing } from '../../data/research';
-import { publications, preprints } from '../../data/publications';
+import { topics } from '../../data/research';
+import { publications } from '../../data/publications';
 import { useTranslations } from '../../i18n/utils';
 import type { Lang } from '../../i18n/ui';
 
@@ -39,45 +38,6 @@ const t = useTranslations(lang);
     </div>
     <div class="pub-list">
       {publications.map((p) => <PubItem pub={p} lang={lang} />)}
-    </div>
-  </section>
-
-  <section class="container section">
-    <div class="section-head">
-      <p class="kicker">Preprints</p>
-      <h2 class="section-title">{t('research.preprints')}</h2>
-    </div>
-    {
-      preprints.length > 0 ? (
-        <div class="pub-list">
-          {preprints.map((p) => (
-            <PubItem pub={p} lang={lang} />
-          ))}
-        </div>
-      ) : (
-        <div class="card dashed-card empty-state">
-          <p>{t('research.preprintsEmpty')}</p>
-          <p class="hint">
-            <code>{t('research.preprintsHint')}</code>
-          </p>
-        </div>
-      )
-    }
-  </section>
-
-  <section class="container section">
-    <div class="section-head">
-      <p class="kicker">Ongoing</p>
-      <h2 class="section-title">{t('research.ongoing')}</h2>
-    </div>
-    <div class="grid grid-2">
-      {ongoing.map((project) => <ProjectCard project={project} lang={lang} />)}
-      <div class="card dashed-card empty-state">
-        <p>{t('research.ongoingEmpty')}</p>
-        <p class="hint">
-          <code>{t('research.ongoingHint')}</code>
-        </p>
-      </div>
     </div>
   </section>
 </Base>

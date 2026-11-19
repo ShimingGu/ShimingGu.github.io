@@ -19,7 +19,8 @@ const year = new Date().getFullYear();
     </div>
     <div class="footer-links">
       {profile.links.github && <a href={profile.links.github} target="_blank" rel="noopener">GitHub</a>}
-      {profile.links.arxiv && <a href={profile.links.arxiv} target="_blank" rel="noopener">arXiv</a>}
+      {profile.links.linkedin && <a href={profile.links.linkedin} target="_blank" rel="noopener">LinkedIn</a>}
+      {profile.links.ads && <a href={profile.links.ads} target="_blank" rel="noopener">ADS</a>}
       {profile.links.scholar && <a href={profile.links.scholar} target="_blank" rel="noopener">Scholar</a>}
       {profile.links.orcid && <a href={profile.links.orcid} target="_blank" rel="noopener">ORCID</a>}
       <a href="https://astro.build" target="_blank" rel="noopener">{t('footer.built')}</a>

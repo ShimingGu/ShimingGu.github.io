@@ -34,18 +34,16 @@ npm run preview
 | 文件 | 内容 |
 | :-- | :-- |
 | `src/data/profile.ts` | 姓名、职位、单位、邮箱、简介、研究兴趣、外链、CV |
-| `src/data/publications.ts` | 已发表论文 `publications`；即将挂 arXiv / 撰写中 / 已投稿 `preprints` |
-| `src/data/research.ts` | 研究方向卡片 `topics`；进行中与后续研究 `ongoing` |
+| `src/data/publications.ts` | 已上线论文列表（arXiv 编号自动生成 arXiv/ADS 链接） |
+| `src/data/research.ts` | 研究方向卡片 `topics`（含本人论文与延伸阅读链接） |
 | `src/data/photos.ts` | 摄影作品登记（图片文件放 `public/photos/`） |
 | `src/data/widgets.ts` | 小工具注册表 |
 
 约定：
 
 - 留空字符串 `''` 的字段不会显示（如职位、单位、邮箱尚未填写时）。
-- 论文 `status`：`published` / `preprint` / `inprep` / `submitted`；
-  方向与项目 `status`：`published` / `ongoing` / `planned`。
+- 论文 `status`：`published` / `preprint` / `inprep` / `submitted`。
 - 论文作者列表中的 `Shiming Gu` 会自动加粗；`arxiv` 填编号即可，自动生成 arXiv 与 ADS 链接。
-- `preprints` 与 `ongoing` 数组里有注释掉的示例条目，复制改内容即可新增。
 - CV：把 PDF 放到 `public/cv.pdf`，然后把 `profile.ts` 中 `cv` 改为 `'/cv.pdf'`。
 
 界面文案（导航、按钮、板块标题等）在 `src/i18n/ui.ts`。

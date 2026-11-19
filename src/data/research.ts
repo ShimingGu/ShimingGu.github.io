@@ -1,9 +1,7 @@
 // ============================================================
-// 研究方向与进行中的工作 —— 按需增删改。
-// - topics:  研究页的方向卡片。summary 为大众化解释（主），
-//            technical 为专业补充（辅，小字显示），
-//            papers 为本人论文链接，reading 为背景/延伸阅读（非本人工作）。
-// - ongoing: “进行中与后续研究”板块的详细条目
+// 研究方向 —— 按需增删改。
+// summary 为大众化解释（主），technical 为研究层面 big picture（辅，小字），
+// papers 为本人论文链接，reading 为背景/延伸阅读（非本人工作）。
 // 注意：论文列表只放已上线的文章；方向描述中不写"即将上线"类承诺。
 // ============================================================
 
@@ -137,49 +135,4 @@ export const topics: Topic[] = [
       },
     ],
   },
-];
-
-export interface Project {
-  id: string;
-  title: Localized;
-  description: Localized;
-  highlights?: Localized[];
-}
-
-export const ongoing: Project[] = [
-  {
-    id: 'redfm',
-    title: {
-      en: 'RedFM — physics-informed photometric redshifts',
-      zh: 'RedFM —— 融合物理的光度红移推断',
-    },
-    description: {
-      en: 'A photometric-redshift programme built on astronomy foundation models and LLM catalogue embeddings, targeting full redshift PDFs with physical likelihoods rather than point estimates.',
-      zh: '基于天文基础模型与大语言模型星表嵌入的光度红移研究计划，目标是带物理似然的完整红移 PDF，而非单点估计。',
-    },
-    highlights: [
-      {
-        en: 'Physical redshift inference with SED likelihoods and sequential Monte Carlo',
-        zh: '结合 SED 物理似然与序贯蒙特卡洛（SMC）的红移推断',
-      },
-      {
-        en: 'Cross-survey transfer (DESI–Legacy → CLAUDS) under tiny supervision budgets',
-        zh: '极小监督预算下的跨巡天迁移（DESI–Legacy → CLAUDS）',
-      },
-      {
-        en: 'ReLoRA / QLoRA post-training of Qwen catalogue embeddings',
-        zh: 'Qwen 星表嵌入的 ReLoRA / QLoRA 后训练',
-      },
-      {
-        en: 'High-redshift anchor recovery and multiband morphology catalogues',
-        zh: '高红移锚点恢复与多波段形态星表',
-      },
-    ],
-  },
-  // 复制上面的条目即可添加新的进行中 / 计划中研究：
-  // {
-  //   id: 'my-project',
-  //   title: { en: '...', zh: '...' },
-  //   description: { en: '...', zh: '...' },
-  // },
 ];

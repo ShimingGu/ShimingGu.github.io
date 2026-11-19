@@ -27,9 +27,10 @@ export const profile = {
   // 个人主页链接（留空则不显示）
   links: {
     github: 'https://github.com/ShimingGu',
+    linkedin: 'https://www.linkedin.com/in/shiming-gu-00b76416b/',
     scholar: '', // TODO: Google Scholar 主页链接
     orcid: '', // TODO: ORCID 链接
-    arxiv: 'https://arxiv.org/search/?searchtype=author&query=Gu%2C+Shiming',
+    ads: 'https://scixplorer.org/search?p=1&q=docs%28library%2Ft_AyUoHWSY2ghMtIurEY5A%29&sort=date+desc&d=astrophysics',
   },
 
   // TODO: 个人简介，按需改写

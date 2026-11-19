@@ -1,7 +1,5 @@
 // ============================================================
-// 论文列表 —— 发表/预印本/撰写中的文章都在这里维护。
-// - publications: 已发表（或已上 arXiv）的论文，按年份从新到旧排列
-// - preprints:    即将挂 arXiv / 撰写中 / 已投稿的文章
+// 论文列表 —— 已上线的文章在这里维护，按年份从新到旧排列。
 // status 可选值: 'published' | 'preprint' | 'inprep' | 'submitted'
 // authors 中的 'Shiming Gu' 会自动加粗显示。
 // journal / doi 选填；arxiv 填编号即可（如 '2412.14704'）。
@@ -138,18 +136,4 @@ export const publications: Pub[] = [
     status: 'published',
     arxiv: '2102.07701',
   },
-];
-
-// ============================================================
-// 预印本 / 撰写中 / 已投稿的文章（文章上线或确定信息后再登记）。
-// 复制下面的示例，去掉注释并修改内容即可显示在“预印本”板块。
-// ============================================================
-export const preprints: Pub[] = [
-  // {
-  //   title: 'Your upcoming paper title',
-  //   authors: ['Shiming Gu', 'Coauthor One', 'Coauthor Two'],
-  //   year: 2026,
-  //   status: 'inprep', // 'inprep' 撰写中 | 'submitted' 已投稿 | 'preprint' 已上 arXiv
-  //   note: { en: 'Expected on arXiv soon.', zh: '即将上传 arXiv。' },
-  // },
 ];

@@ -1,0 +1,349 @@
+---
+import { createHash } from 'node:crypto';
+import SalonBase from '../../../layouts/SalonBase.astro';
+import { getLangFromUrl, otherLang } from '../../../i18n/utils';
+import { salonUi } from '../../../i18n/salon';
+import { salon, SALON_YEARS, SALON_RULES, organizerEmail } from '../../../data/salon';
+import { secondFriday, monthKey, totalMinutes } from '../../../lib/salon';
+import type { Lang } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (const lang of ['en', 'zh']) {
+    for (const year of SALON_YEARS) {
+      for (let m = 1; m <= 12; m++) {
+        paths.push({ params: { lang, month: monthKey(year, m) } });
+      }
+    }
+  }
+  return paths;
+}
+
+const lang = Astro.params.lang as Lang;
+const month = Astro.params.month as string;
+const t = salonUi[lang];
+const [yearStr, monthStr] = month.split('-');
+const date = secondFriday(Number(yearStr), Number(monthStr));
+const entries = salon[month] ?? [];
+const total = totalMinutes(entries);
+const isPast = date < new Date();
+
+// identifier 是私有修改凭证：客户端只接收 SHA-256 哈希
+const clientEntries = entries.map((e) => ({
+  idHash: createHash('sha256').update(e.id.trim().toLowerCase()).digest('hex'),
+  who: e.who,
+  minutes: e.minutes,
+  talk: e.talk,
+  food: e.food,
+}));
+
+const titleFmt = new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en', {
+  year: 'numeric',
+  month: 'long',
+});
+const dateFmt = new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  weekday: 'long',
+});
+const other = otherLang(lang);
+---
+
+<SalonBase title={`${titleFmt.format(date)} · ${t.title}`}>
+  <section class="salon-hero">
+    <p class="kicker">{t.detailKicker}</p>
+    <h1>{titleFmt.format(date)}</h1>
+    <p class="session-date">{dateFmt.format(date)}</p>
+
+    <div class="budget-row">
+      <span>{t.budget}</span>
+      <span class="budget-total">{t.total} {total}/60 {t.minUnit}</span>
+    </div>
+    <div class="budget-bar">
+      <div class="budget-fill" style={`width: ${(total / SALON_RULES.totalMax) * 100}%`}></div>
+      <div class="budget-mark" style={`left: ${(SALON_RULES.totalMin / SALON_RULES.totalMax) * 100}%`}></div>
+    </div>
+    <div class="budget-scale">
+      <span>0</span>
+      <span>{SALON_RULES.totalMin}</span>
+      <span>{SALON_RULES.totalMax} {t.minUnit}</span>
+    </div>
+    <p class="rules">{t.rules}</p>
+  </section>
+
+  <section class="salon-section">
+    <h2 class="salon-h2">{t.lineup}</h2>
+    {
+      entries.length === 0 ? (
+        <p style="color: #7d7466;">{t.noEntries}</p>
+      ) : (
+        <div class="lineup">
+          {entries.map((e) => (
+            <article class="lineup-entry">
+              <div class="lineup-head">
+                <span class="lineup-who">{e.who}</span>
+                <span class="lineup-min">
+                  {e.minutes} {t.minUnit}
+                </span>
+              </div>
+              <p class="lineup-talk">{e.talk[lang] || e.talk[other]}</p>
+              <p class="lineup-food">
+                {lang === 'zh' ? '想吃：' : 'Wants: '}
+                {e.food[lang] || e.food[other]}
+              </p>
+            </article>
+          ))}
+        </div>
+      )
+    }
+  </section>
+
+  {
+    !isPast && (
+      <section class="salon-section">
+        <div class="salon-form">
+          <div class="form-row">
+            <div class="segmented" role="group" id="mode-seg">
+              <button type="button" data-mode="new" aria-pressed="true">
+                {t.modeNew}
+              </button>
+              <button type="button" data-mode="edit" aria-pressed="false">
+                {t.modeEdit}
+              </button>
+            </div>
+            <div class="segmented" role="group" id="lang-seg" aria-label={t.inputLang}>
+              <button type="button" data-ilang="zh" aria-pressed={lang === 'zh' ? 'true' : 'false'}>
+                中文
+              </button>
+              <button type="button" data-ilang="en" aria-pressed={lang === 'en' ? 'true' : 'false'}>
+                EN
+              </button>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field" style="flex: 1; min-width: 200px; margin: 0;">
+              <label for="sf-id">{t.idLabel}</label>
+              <input id="sf-id" maxlength="24" autocomplete="off" />
+            </div>
+            <button type="button" class="btn-salon ghost" id="sf-load" hidden>
+              {t.load}
+            </button>
+          </div>
+          <div class="field">
+            <label for="sf-who">{t.whoLabel}</label>
+            <input id="sf-who" maxlength="40" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="sf-talk">{t.talkLabel}</label>
+            <input id="sf-talk" autocomplete="off" />
+          </div>
+          <div class="form-row">
+            <div class="field" style="width: 170px; margin: 0;">
+              <label for="sf-min">{t.minutesLabel}</label>
+              <input id="sf-min" type="number" min="10" max="60" step="5" value="20" />
+            </div>
+            <span class="will-total" id="sf-will"></span>
+          </div>
+          <div class="field">
+            <label for="sf-food">{t.foodLabel}</label>
+            <input id="sf-food" autocomplete="off" />
+          </div>
+          <button type="button" class="btn-salon" id="sf-submit">
+            {t.submitNew}
+          </button>
+          <p class="form-msg" id="sf-msg"></p>
+          <div class="export-box" id="sf-export" hidden>
+            <textarea id="sf-text" readonly></textarea>
+            <div class="export-actions">
+              <button type="button" class="btn-salon" id="sf-copy">
+                {t.copy}
+              </button>
+              <a class="btn-salon ghost" id="sf-mail" hidden>
+                {t.mail}
+              </a>
+            </div>
+            <p class="export-hint">{t.exportHint}</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+</SalonBase>
+
+<script define:vars={{ month, entries: clientEntries, organizerEmail }}>
+  import {
+    checkFields,
+    checkNew,
+    checkEdit,
+    exportText,
+    totalMinutes,
+    hashId,
+  } from '../../../lib/salon';
+  import { salonUi } from '../../../i18n/salon';
+
+  const lang = document.documentElement.lang.startsWith('zh') ? 'zh' : 'en';
+  const other = lang === 'zh' ? 'en' : 'zh';
+  const t = salonUi[lang];
+  const $ = (id) => document.getElementById(id);
+
+  const idIn = $('sf-id');
+  const whoIn = $('sf-who');
+  const talkIn = $('sf-talk');
+  const minIn = $('sf-min');
+  const foodIn = $('sf-food');
+  const msg = $('sf-msg');
+  const exportBox = $('sf-export');
+  const textOut = $('sf-text');
+  const copyBtn = $('sf-copy');
+  const mailLink = $('sf-mail');
+  const loadBtn = $('sf-load');
+  const submitBtn = $('sf-submit');
+  const willEl = $('sf-will');
+
+  let mode = 'new';
+  let ilang = lang;
+  let loaded = null;
+
+  const baseTotal = totalMinutes(entries);
+
+  function say(key, ok) {
+    msg.textContent = key ? t[key] : '';
+    msg.className = 'form-msg ' + (ok ? 'ok' : 'error');
+  }
+
+  function hideExport() {
+    exportBox.hidden = true;
+  }
+
+  function updateWill() {
+    const m = parseInt(minIn.value, 10);
+    if (!Number.isInteger(m)) {
+      willEl.textContent = '';
+      return;
+    }
+    const prospective = mode === 'edit' && loaded ? baseTotal - loaded.minutes + m : baseTotal + m;
+    willEl.textContent = `${t.willTotal} ${prospective}/60 ${t.minUnit}`;
+  }
+
+  async function loadEntry() {
+    const hash = await hashId(idIn.value);
+    loaded = entries.find((e) => e.idHash === hash) ?? null;
+    if (!loaded) {
+      say('errIdUnknown', false);
+      return;
+    }
+    minIn.value = String(loaded.minutes);
+    whoIn.value = loaded.who;
+    talkIn.value = loaded.talk[ilang] || loaded.talk[other];
+    foodIn.value = loaded.food[ilang] || loaded.food[other];
+    say('loaded', true);
+    hideExport();
+    updateWill();
+  }
+
+  document.querySelectorAll('#mode-seg button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      mode = btn.dataset.mode;
+      document
+        .querySelectorAll('#mode-seg button')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      loadBtn.hidden = mode !== 'edit';
+      submitBtn.textContent = mode === 'new' ? t.submitNew : t.submitEdit;
+      loaded = null;
+      say(null, false);
+      hideExport();
+      updateWill();
+    }),
+  );
+
+  document.querySelectorAll('#lang-seg button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      ilang = btn.dataset.ilang;
+      document
+        .querySelectorAll('#lang-seg button')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      if (mode === 'edit' && loaded) {
+        talkIn.value = loaded.talk[ilang] || loaded.talk[other];
+        foodIn.value = loaded.food[ilang] || loaded.food[other];
+      }
+    }),
+  );
+
+  loadBtn.addEventListener('click', loadEntry);
+  minIn.addEventListener('input', updateWill);
+
+  submitBtn.addEventListener('click', async () => {
+    const id = idIn.value.trim();
+    const who = whoIn.value;
+    const minutes = parseInt(minIn.value, 10);
+    const talk = talkIn.value;
+    const food = foodIn.value;
+
+    const fieldErr = checkFields(id, who, minutes, talk, food);
+    if (fieldErr) {
+      say(fieldErr, false);
+      hideExport();
+      return;
+    }
+
+    const hash = await hashId(id);
+    let err;
+    let entry;
+    if (mode === 'new') {
+      err = checkNew(entries, hash, minutes);
+      entry = {
+        id,
+        who,
+        minutes,
+        talk: { zh: ilang === 'zh' ? talk : '', en: ilang === 'en' ? talk : '' },
+        food: { zh: ilang === 'zh' ? food : '', en: ilang === 'en' ? food : '' },
+      };
+    } else {
+      if (!loaded || loaded.idHash !== hash) {
+        say('errIdUnknown', false);
+        hideExport();
+        return;
+      }
+      err = checkEdit(entries, hash, minutes);
+      entry = {
+        id,
+        who,
+        minutes,
+        talk: { ...loaded.talk, [ilang]: talk },
+        food: { ...loaded.food, [ilang]: food },
+      };
+    }
+
+    if (err) {
+      say(err, false);
+      hideExport();
+      return;
+    }
+
+    say(mode === 'new' ? 'okNew' : 'okEdit', true);
+    textOut.value = exportText(month, mode, entry);
+    exportBox.hidden = false;
+    if (organizerEmail) {
+      mailLink.hidden = false;
+      mailLink.href =
+        `mailto:${organizerEmail}` +
+        `?subject=${encodeURIComponent(`[SALON ${month}] ${mode === 'new' ? 'signup' : 'change'}: ${entry.who}`)}` +
+        `&body=${encodeURIComponent(textOut.value)}`;
+    }
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(textOut.value);
+    } catch {
+      textOut.select();
+      document.execCommand('copy');
+    }
+    const original = t.copy;
+    copyBtn.textContent = t.copied;
+    setTimeout(() => (copyBtn.textContent = original), 1500);
+  });
+
+  updateWill();
+</script>

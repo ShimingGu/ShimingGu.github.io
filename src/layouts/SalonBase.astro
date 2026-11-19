@@ -1,0 +1,42 @@
+---
+import '../styles/global.css';
+import '../styles/salon.css';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { getLangFromUrl, switchLangPath } from '../i18n/utils';
+import { salonUi } from '../i18n/salon';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = salonUi[lang];
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang={lang === 'zh' ? 'zh-CN' : 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="salon-body">
+    <header class="salon-top">
+      <div class="salon-wrap salon-top-inner">
+        <a class="salon-back" href={getRelativeLocaleUrl(lang, '')}>← {t.back}</a>
+        <div class="lang-switch salon-lang">
+          <a href={switchLangPath(path, 'en')} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+          <a href={switchLangPath(path, 'zh')} aria-current={lang === 'zh' ? 'true' : undefined}>中文</a>
+        </div>
+      </div>
+      <div class="salon-checker" aria-hidden="true"></div>
+    </header>
+    <main class="salon-wrap salon-main">
+      <slot />
+    </main>
+    <footer class="salon-wrap salon-foot">{t.foot} · © 2026 Shiming Gu</footer>
+  </body>
+</html>

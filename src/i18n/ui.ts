@@ -62,6 +62,9 @@ export const ui = {
     'widgets.kicker': 'Widgets',
     'widgets.title': 'Widgets & Tools',
     'widgets.add': 'Add a new widget',
+    'widgets.salon': 'You decide what we hear & what we eat',
+    'widgets.salonDesc':
+      'Academic salon calendar: second Friday of each month — sign up for what you will talk about, for how long, and what you want to eat.',
     'widgets.addDesc': 'New widgets will appear here. Drop a component into src/components/widgets/ and register it in src/data/widgets.ts.',
     'footer.built': 'Built with Astro',
     'footer.rights': 'All rights reserved.',
@@ -130,6 +133,8 @@ export const ui = {
     'widgets.kicker': 'Widgets',
     'widgets.title': '小工具',
     'widgets.add': '添加新的小工具',
+    'widgets.salon': '你决定大家听什么和吃什么',
+    'widgets.salonDesc': '学术沙龙日历：每月第二个星期五——登记你讲什么、讲多久、想吃什么。',
     'widgets.addDesc': '新的小组件将展示在这里。把组件放入 src/components/widgets/，并在 src/data/widgets.ts 中注册即可。',
     'footer.built': '基于 Astro 构建',
     'footer.rights': '保留所有权利。',

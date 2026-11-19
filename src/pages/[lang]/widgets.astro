@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import CosmoCalc from '../../components/widgets/CosmoCalc.astro';
 import GroupPicker from '../../components/widgets/GroupPicker.astro';
+import { getRelativeLocaleUrl } from 'astro:i18n';
 import { profile } from '../../data/profile';
 import { widgets } from '../../data/widgets';
 import { useTranslations } from '../../i18n/utils';
@@ -42,6 +43,14 @@ const registry = {
         );
       })
     }
+
+    <a class="card-link" href={getRelativeLocaleUrl(lang, 'salon')} style="display: block; margin-bottom: 1.25rem;">
+      <article class="card">
+        <h3>{t('widgets.salon')}</h3>
+        <p>{t('widgets.salonDesc')}</p>
+        <span class="card-arrow">→</span>
+      </article>
+    </a>
 
     <div class="card dashed-card empty-state">
       <p>{t('widgets.add')}</p>

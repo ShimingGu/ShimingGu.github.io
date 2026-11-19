@@ -1,0 +1,131 @@
+---
+import SalonBase from '../../../layouts/SalonBase.astro';
+import { getLangFromUrl } from '../../../i18n/utils';
+import { salonUi } from '../../../i18n/salon';
+import { salon, SALON_YEARS } from '../../../data/salon';
+import { monthKey, totalMinutes } from '../../../lib/salon';
+import type { Lang } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const t = salonUi[lang];
+
+// 客户端只拿统计量，不拿登记明细（identifier 私有）
+const stats: Record<string, { n: number; total: number }> = {};
+for (const year of SALON_YEARS) {
+  for (let m = 1; m <= 12; m++) {
+    const key = monthKey(year, m);
+    const entries = salon[key] ?? [];
+    stats[key] = { n: entries.length, total: totalMinutes(entries) };
+  }
+}
+---
+
+<SalonBase title={`${t.title} · ${t.kicker}`}>
+  <section class="salon-hero">
+    <p class="kicker">{t.kicker}</p>
+    <h1>{t.title}</h1>
+    <p class="lede">{t.lede}</p>
+  </section>
+
+  <section class="salon-section">
+    <div class="cal-head">
+      <h2 class="salon-h2" style="margin: 0;">{t.calendar}</h2>
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-left: auto;">
+        <button class="cal-nav" id="cal-prev" aria-label={t.yearPrev}>‹</button>
+        <span class="cal-year" id="cal-year"></span>
+        <button class="cal-nav" id="cal-next" aria-label={t.yearNext}>›</button>
+      </div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <p class="rules">{t.rules}</p>
+  </section>
+</SalonBase>
+
+<script define:vars={{ stats, years: SALON_YEARS }}>
+  import { secondFriday, monthKey } from '../../../lib/salon';
+  import { salonUi } from '../../../i18n/salon';
+
+  const lang = document.documentElement.lang.startsWith('zh') ? 'zh' : 'en';
+  const t = salonUi[lang];
+  const grid = document.getElementById('cal-grid')!;
+  const yearEl = document.getElementById('cal-year')!;
+  const prev = document.getElementById('cal-prev') as HTMLButtonElement;
+  const next = document.getElementById('cal-next') as HTMLButtonElement;
+
+  const now = new Date();
+  let year = years.includes(now.getFullYear()) ? now.getFullYear() : years[0];
+
+  const monthFmt = new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en', { month: 'long' });
+  const dateFmt = new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en', {
+    month: 'short',
+    day: 'numeric',
+    weekday: 'short',
+  });
+
+  function render() {
+    yearEl.textContent = String(year);
+    prev.disabled = year <= years[0];
+    next.disabled = year >= years[years.length - 1];
+    grid.replaceChildren();
+    for (let m = 1; m <= 12; m++) {
+      const key = monthKey(year, m);
+      const date = secondFriday(year, m);
+      const { n, total } = stats[key] ?? { n: 0, total: 0 };
+      const isPast = date < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const isCurrent = year === now.getFullYear() && m === now.getMonth() + 1;
+
+      const a = document.createElement('a');
+      a.className = 'cal-card' + (isPast ? ' past' : '') + (isCurrent ? ' current' : '');
+      a.href = `/${lang}/salon/${key}/`;
+
+      const tag = document.createElement('span');
+      if (isPast) {
+        tag.className = 'cal-tag past';
+        tag.textContent = t.past;
+      } else if (total >= 60) {
+        tag.className = 'cal-tag full';
+        tag.textContent = t.full;
+      } else if (n === 0) {
+        tag.className = 'cal-tag empty';
+        tag.textContent = t.emptyMonth;
+      } else {
+        tag.className = 'cal-tag open';
+        tag.textContent = t.open;
+      }
+
+      const month = document.createElement('div');
+      month.className = 'cal-month';
+      month.textContent = monthFmt.format(date) + (isCurrent ? ` · ${t.today}` : '');
+
+      const dateEl = document.createElement('div');
+      dateEl.className = 'cal-date';
+      dateEl.textContent = dateFmt.format(date);
+
+      const statsEl = document.createElement('div');
+      statsEl.className = 'cal-stats';
+      statsEl.textContent =
+        n === 0
+          ? '—'
+          : lang === 'zh'
+            ? `${n} 人 · ${total}/60 ${t.minUnit}`
+            : `${n} speaker${n > 1 ? 's' : ''} · ${total}/60 ${t.minUnit}`;
+
+      a.append(tag, month, dateEl, statsEl);
+      grid.append(a);
+    }
+  }
+
+  prev.addEventListener('click', () => {
+    year--;
+    render();
+  });
+  next.addEventListener('click', () => {
+    year++;
+    render();
+  });
+  render();
+</script>

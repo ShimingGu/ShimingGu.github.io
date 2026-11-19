@@ -69,6 +69,20 @@ npm run preview
 - `.github/workflows/deploy.yml` 已配置：推送 `main` 自动构建并发布。
 - 首次使用需在仓库 Settings → Pages 中将 Source 设为 **GitHub Actions**。
 
+## 学术沙龙（你决定大家听什么和吃什么）
+
+入口在小工具页底部的卡片（不在主导航），独立页面、独立暖纸配色：`/zh/salon/`、`/en/salon/`。
+
+- **日历**：每月第二个星期五；年份范围改 `src/data/salon.ts` 的 `SALON_YEARS`。
+- **共享看板数据**：`src/data/salon.ts` 的 `salon`，由组织者维护（或叫 AI 刷新写入）。
+  页面表单只做规则校验 + 生成报名文本（复制 / 邮件），不直接写看板。
+- **identifier 是私有修改凭证**：不公开显示，客户端只接收 SHA-256 哈希；
+  `who`（我是谁）才是公开显示名。凭 identifier 可载入并修改自己的登记。
+- **规则**（`src/lib/salon.ts`）：每人 ≥10 分钟；全场 20–60 分钟；
+  第一位讲者 ≥20 分钟，之后有人加入可下调自己的时间。
+- **双语**：登记时选一种语言填写 talk/food，另一种留空待翻译刷新；显示时自动回退。
+- 填 `organizerEmail` 后表单出现"邮件发给组织者"按钮。
+
 ## 目录结构
 
 ```text

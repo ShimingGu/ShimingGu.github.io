@@ -1,6 +1,6 @@
 # Shiming Gu · 个人网站
 
-基于 [Astro](https://astro.build) 的中英双语个人主页，深色宇宙风主题。
+基于 [Astro](https://astro.build) 的中英双语个人主页：白底黑星的负片宇宙主题 + 苹果式字体排版。
 线上地址：<https://shiminggu.github.io>（推送 `main` 分支后由 GitHub Actions 自动部署）。
 
 ## 本地开发

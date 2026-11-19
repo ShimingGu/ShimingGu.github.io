@@ -1,20 +1,20 @@
 /* 排版策略参照 apple.com：系统字体栈、17px/1.47 正文、紧字距标题、
-   semibold 层级、克制用色、大留白、980px 内容宽。深色宇宙底保留。 */
+   semibold 层级、克制用色、大留白、980px 内容宽。白底黑星负片宇宙。 */
 
 :root {
-  --bg: #000000;
-  --bg-elev: #1d1d1f;
-  --card: #1d1d1f;
-  --card-hover: #232326;
-  --ink: #f5f5f7;
-  --muted: #a1a1a6;
+  --bg: #ffffff;
+  --bg-elev: #f5f5f7;
+  --card: #f5f5f7;
+  --card-hover: #e8e8ed;
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
   --faint: #86868b;
-  --cyan: #2997ff;
-  --cyan-hover: #6cb8ff;
-  --violet: #a78bfa;
-  --gold: #ffd60a;
-  --line: rgba(255, 255, 255, 0.14);
-  --line-strong: rgba(255, 255, 255, 0.28);
+  --cyan: #0071e3;
+  --cyan-hover: #0077ed;
+  --violet: #6e56cf;
+  --gold: #9a6700;
+  --line: #d2d2d7;
+  --line-strong: #86868b;
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
     'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --font-display: var(--font-sans);
@@ -44,12 +44,7 @@ body {
   line-height: 1.47059;
   font-weight: 400;
   letter-spacing: -0.011em;
-  background:
-    radial-gradient(ellipse 80% 50% at 18% -10%, rgba(41, 151, 255, 0.1), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 85% 8%, rgba(167, 139, 250, 0.06), transparent 55%),
-    radial-gradient(ellipse 70% 60% at 50% 115%, rgba(41, 151, 255, 0.07), transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -59,7 +54,7 @@ html[lang='zh-CN'] :is(body, h1, h2, h3, h4, .kicker, .section-title) {
 }
 
 ::selection {
-  background: rgba(41, 151, 255, 0.35);
+  background: rgba(0, 113, 227, 0.2);
 }
 
 :focus-visible {
@@ -182,10 +177,10 @@ main {
   right: 0;
   z-index: 50;
   height: var(--nav-h);
-  background: rgba(0, 0, 0, 0.72);
+  background: rgba(255, 255, 255, 0.72);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .nav-inner {
@@ -223,7 +218,7 @@ main {
 }
 
 .nav-links a {
-  color: rgba(245, 245, 247, 0.8);
+  color: rgba(29, 29, 31, 0.8);
   font-size: 0.875rem;
   font-weight: 400;
   padding: 0.35rem 0.85rem;
@@ -266,7 +261,7 @@ main {
 
 .lang-switch a:not([aria-current]):hover {
   color: var(--ink);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .nav-toggle {
@@ -297,9 +292,9 @@ main {
     align-items: stretch;
     gap: 0.25rem;
     padding: 0.75rem clamp(1.25rem, 4vw, 2rem) 1rem;
-    background: rgba(0, 0, 0, 0.94);
+    background: rgba(255, 255, 255, 0.94);
     backdrop-filter: saturate(180%) blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     display: none;
   }
 
@@ -402,7 +397,7 @@ main {
   gap: 0.5rem;
   padding: 0.65rem 1.4rem;
   border-radius: 999px;
-  border: 1px solid rgba(41, 151, 255, 0.45);
+  border: 1px solid rgba(0, 113, 227, 0.45);
   color: var(--cyan);
   font-size: 0.95rem;
   font-weight: 500;
@@ -415,8 +410,8 @@ main {
 
 .btn:hover {
   color: var(--cyan-hover);
-  border-color: rgba(41, 151, 255, 0.7);
-  background: rgba(41, 151, 255, 0.1);
+  border-color: rgba(0, 113, 227, 0.7);
+  background: rgba(0, 113, 227, 0.06);
   transform: none;
   box-shadow: none;
 }
@@ -442,7 +437,7 @@ main {
   border-radius: 999px;
   border: none;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .chips {
@@ -455,7 +450,7 @@ main {
 
 .card {
   background: var(--card);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid transparent;
   border-radius: var(--radius);
   padding: 1.75rem;
   transition: background 0.25s;
@@ -463,7 +458,7 @@ main {
 
 .card:hover {
   transform: none;
-  border-color: rgba(255, 255, 255, 0.06);
+  border-color: transparent;
   background: var(--card-hover);
   box-shadow: none;
 }
@@ -503,14 +498,14 @@ main {
 }
 
 .dashed-card:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .dashed-card code {
   font-family: var(--font-mono);
   font-size: 0.8em;
   color: var(--cyan);
-  background: rgba(41, 151, 255, 0.1);
+  background: rgba(0, 113, 227, 0.06);
   padding: 0.1em 0.4em;
   border-radius: 6px;
 }
@@ -532,18 +527,18 @@ main {
 
 .badge-published {
   color: var(--cyan);
-  background: rgba(41, 151, 255, 0.14);
+  background: rgba(0, 113, 227, 0.1);
 }
 
 .badge-preprint {
   color: var(--violet);
-  background: rgba(167, 139, 250, 0.14);
+  background: rgba(110, 86, 207, 0.1);
 }
 
 .badge-inprep,
 .badge-submitted {
   color: var(--gold);
-  background: rgba(255, 214, 10, 0.12);
+  background: rgba(154, 103, 0, 0.1);
 }
 
 /* ---------- about / info list ---------- */
@@ -625,7 +620,7 @@ main {
 
 .ref-links a:hover {
   color: var(--cyan);
-  border-color: rgba(41, 151, 255, 0.5);
+  border-color: rgba(0, 113, 227, 0.5);
 }
 
 /* ---------- publications ---------- */
@@ -699,7 +694,7 @@ main {
   font-weight: 500;
   letter-spacing: 0;
   padding: 0.15rem 0.65rem;
-  border: 1px solid rgba(41, 151, 255, 0.35);
+  border: 1px solid rgba(0, 113, 227, 0.35);
   border-radius: 999px;
   color: var(--cyan);
   transition: background 0.2s, color 0.2s;
@@ -707,8 +702,8 @@ main {
 
 .pub-links a:hover {
   color: var(--cyan-hover);
-  background: rgba(41, 151, 255, 0.1);
-  border-color: rgba(41, 151, 255, 0.5);
+  background: rgba(0, 113, 227, 0.06);
+  border-color: rgba(0, 113, 227, 0.5);
 }
 
 @media (max-width: 560px) {
@@ -774,7 +769,7 @@ main {
 }
 
 .lightbox::backdrop {
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
 }
 
@@ -795,7 +790,7 @@ main {
 
 .lightbox-btn {
   position: fixed;
-  background: rgba(29, 29, 31, 0.8);
+  background: rgba(245, 245, 247, 0.85);
   border: none;
   color: var(--ink);
   width: 44px;
@@ -811,7 +806,7 @@ main {
 
 .lightbox-btn:hover {
   border-color: transparent;
-  background: rgba(60, 60, 63, 0.9);
+  background: rgba(232, 232, 237, 0.95);
 }
 
 .lightbox-close {
@@ -835,7 +830,7 @@ main {
 
 .widget {
   background: var(--card);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid transparent;
   border-radius: var(--radius);
   padding: 1.75rem;
 }
@@ -872,8 +867,8 @@ main {
 .widget textarea,
 .widget select {
   width: 100%;
-  background: #161617;
-  border: 1px solid #424245;
+  background: #ffffff;
+  border: 1px solid #d2d2d7;
   border-radius: 10px;
   color: var(--ink);
   font-family: var(--font-body);
@@ -893,7 +888,7 @@ main {
 .widget select:focus {
   outline: none;
   border-color: var(--cyan);
-  box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
 }
 
 .widget-row {
@@ -918,7 +913,7 @@ main {
 }
 
 .calc-out {
-  background: #161617;
+  background: #ffffff;
   border: none;
   border-radius: 12px;
   padding: 0.85rem 1rem;
@@ -955,7 +950,7 @@ main {
 }
 
 .picker-group {
-  background: #161617;
+  background: #ffffff;
   border: none;
   border-radius: 12px;
   padding: 0.7rem 1rem;
@@ -976,7 +971,7 @@ main {
 .segmented {
   display: inline-flex;
   border: none;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 999px;
   overflow: hidden;
   padding: 2px;
@@ -996,9 +991,10 @@ main {
 }
 
 .segmented button[aria-pressed='true'] {
-  background: #333336;
+  background: #ffffff;
   color: var(--ink);
   font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
 /* ---------- footer ---------- */
@@ -1055,7 +1051,7 @@ main {
   font-family: var(--font-mono);
   font-size: 0.85em;
   color: var(--cyan);
-  background: rgba(41, 151, 255, 0.1);
+  background: rgba(0, 113, 227, 0.06);
   padding: 0.1em 0.4em;
   border-radius: 6px;
 }

@@ -1,0 +1,483 @@
+/* 沙龙独立配色：暖纸 + 墨黑 + 柿红 + 抹茶，餐车黑板报感，与主站深空风区分 */
+
+body.salon-body {
+  background: #f4efe4;
+  color: #2b2620;
+}
+
+main.salon-main {
+  padding-top: 0;
+}
+
+.salon-wrap {
+  max-width: 960px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+.salon-top {
+  background: #2b2620;
+  color: #f4efe4;
+}
+
+.salon-top-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.salon-back {
+  color: #f4efe4;
+  font-size: 0.9rem;
+}
+
+.salon-back:hover {
+  color: #ffb59d;
+}
+
+.salon-lang {
+  border-color: rgba(244, 239, 228, 0.35);
+}
+
+.salon-lang a {
+  color: rgba(244, 239, 228, 0.75);
+}
+
+.salon-lang a[aria-current='true'] {
+  background: #d4491f;
+  color: #f4efe4;
+}
+
+.salon-lang a:not([aria-current]):hover {
+  color: #f4efe4;
+  background: rgba(244, 239, 228, 0.12);
+}
+
+.salon-checker {
+  height: 10px;
+  background: repeating-conic-gradient(#d4491f 0% 25%, #f4efe4 0% 50%) 0 0 / 16px 16px;
+}
+
+.salon-hero {
+  padding: clamp(2.5rem, 6vw, 4rem) 0 1.75rem;
+}
+
+.salon-hero .kicker {
+  color: #d4491f;
+}
+
+.salon-hero h1 {
+  font-size: clamp(2rem, 4.5vw, 2.9rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.4em;
+}
+
+.salon-hero .lede {
+  color: #7d7466;
+  max-width: 46rem;
+}
+
+.salon-section {
+  padding-block: 1.75rem;
+}
+
+.salon-section + .salon-section {
+  border-top: 1px dashed #d8cfbf;
+}
+
+.salon-h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+/* calendar */
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.cal-year {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  min-width: 5.5rem;
+  text-align: center;
+}
+
+.cal-nav {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #d8cfbf;
+  border-radius: 10px;
+  background: #fffdf7;
+  color: #2b2620;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cal-nav:hover:not(:disabled) {
+  background: #2b2620;
+  color: #f4efe4;
+}
+
+.cal-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.9rem;
+}
+
+.cal-card {
+  display: block;
+  background: #fffdf7;
+  border: 1px solid #e0d8c8;
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  color: #2b2620;
+  box-shadow: 0 1px 3px rgba(43, 38, 32, 0.08);
+  transition: box-shadow 0.15s;
+}
+
+.cal-card:hover {
+  color: #2b2620;
+  box-shadow: 0 4px 14px rgba(43, 38, 32, 0.12);
+}
+
+.cal-card.past {
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.cal-card.current {
+  border-color: #d4491f;
+}
+
+.cal-month {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: -0.015em;
+}
+
+.cal-date {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #7d7466;
+  margin: 0.15rem 0 0.5rem;
+}
+
+.cal-stats {
+  font-size: 0.82rem;
+  color: #2b2620;
+}
+
+.cal-tag {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  margin-bottom: 0.45rem;
+}
+
+.cal-tag.open {
+  color: #3f7d5c;
+}
+
+.cal-tag.full {
+  color: #d4491f;
+}
+
+.cal-tag.past {
+  color: #7d7466;
+}
+
+.cal-tag.empty {
+  color: #7d7466;
+}
+
+/* session detail */
+
+.session-date {
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: #7d7466;
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+.budget-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.budget-total {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: -0.015em;
+  color: #3f7d5c;
+}
+
+.budget-bar {
+  position: relative;
+  height: 16px;
+  border: 1px solid #d8cfbf;
+  border-radius: 999px;
+  background: #fffdf7;
+  overflow: hidden;
+}
+
+.budget-fill {
+  height: 100%;
+  background: #3f7d5c;
+  transition: width 0.3s;
+}
+
+.budget-mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(43, 38, 32, 0.45);
+}
+
+.budget-scale {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #7d7466;
+  margin-top: 0.3rem;
+}
+
+.rules {
+  font-size: 0.875rem;
+  color: #7d7466;
+  border-left: 3px solid #d4491f;
+  padding-left: 0.8rem;
+  margin: 1.1rem 0 0;
+  line-height: 1.7;
+}
+
+.lineup {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.lineup-entry {
+  background: #fffdf7;
+  border: 1px dashed #c9bda6;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+}
+
+.lineup-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.35rem;
+}
+
+.lineup-who {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  color: #2b2620;
+}
+
+.lineup-min {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: #d4491f;
+  font-size: 0.95rem;
+}
+
+.lineup-talk {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+}
+
+.lineup-food {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #7d7466;
+}
+
+/* form */
+
+.salon-form {
+  background: #fffdf7;
+  border: 1px solid #e0d8c8;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(43, 38, 32, 0.08);
+}
+
+.salon-form label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #7d7466;
+  margin-bottom: 0.35rem;
+}
+
+.salon-form input,
+.salon-form textarea {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #c9bda6;
+  border-radius: 10px;
+  color: #2b2620;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.55rem 0.8rem;
+}
+
+.salon-form input:focus,
+.salon-form textarea:focus {
+  outline: none;
+  border-color: #d4491f;
+  box-shadow: 0 0 0 3px rgba(212, 73, 31, 0.15);
+}
+
+.salon-form .field {
+  margin-bottom: 1rem;
+}
+
+.salon-form .segmented {
+  border: none;
+  background: rgba(43, 38, 32, 0.08);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.salon-form .segmented button {
+  color: #7d7466;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+}
+
+.salon-form .segmented button[aria-pressed='true'] {
+  background: #2b2620;
+  color: #f4efe4;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.btn-salon {
+  background: #2b2620;
+  color: #f4efe4;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-salon:hover {
+  background: #d4491f;
+  color: #f4efe4;
+}
+
+.btn-salon.ghost {
+  background: transparent;
+  color: #2b2620;
+}
+
+.btn-salon.ghost:hover {
+  background: #2b2620;
+  color: #f4efe4;
+}
+
+.form-msg {
+  font-size: 0.9rem;
+  margin: 0.75rem 0 0;
+  min-height: 1.4em;
+}
+
+.form-msg.error {
+  color: #b3261e;
+}
+
+.form-msg.ok {
+  color: #3f7d5c;
+}
+
+.will-total {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #7d7466;
+}
+
+.export-box {
+  margin-top: 1rem;
+  border-top: 1px dashed #d8cfbf;
+  padding-top: 1rem;
+}
+
+.export-box textarea {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  min-height: 9.5rem;
+  background: #f8f4ea;
+  border: 1px dashed #c9bda6;
+  line-height: 1.6;
+}
+
+.export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.export-hint {
+  font-size: 0.78rem;
+  color: #7d7466;
+  margin: 0.75rem 0 0;
+}
+
+.salon-foot {
+  padding: 2.25rem 0 3rem;
+  color: #7d7466;
+  font-size: 0.8rem;
+}

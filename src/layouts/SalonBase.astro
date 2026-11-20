@@ -24,14 +24,11 @@ const path = Astro.url.pathname;
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
-  <body class="salon-body metro">
+  <body class="salon-body">
     <header class="salon-top">
       <div class="salon-wrap salon-top-inner">
         <a class="salon-back" href={getRelativeLocaleUrl(lang, '')}>← {t.back}</a>
         <div style="display: flex; align-items: center; gap: 0.9rem;">
-          <a class="metro-toggle" id="metro-toggle" href={path + '?paper=1'}>
-            {lang === 'zh' ? '暖纸预览' : 'paper preview'}
-          </a>
           <div class="lang-switch salon-lang">
             <a href={switchLangPath(path, 'en')} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
             <a href={switchLangPath(path, 'zh')} aria-current={lang === 'zh' ? 'true' : undefined}>中文</a>
@@ -42,20 +39,11 @@ const path = Astro.url.pathname;
     </header>
     <script is:inline>
       (function () {
-        var paper = new URL(location.href).searchParams.has('paper');
-        if (paper) document.body.classList.remove('metro');
-        var zh = document.documentElement.lang.startsWith('zh');
-        var a = document.getElementById('metro-toggle');
-        if (a) {
-          var t = new URL(location.href);
-          if (paper) t.searchParams.delete('paper');
-          else t.searchParams.set('paper', '1');
-          a.href = t.pathname + t.search;
-          a.textContent = paper ? (zh ? '回到 metro' : 'back to metro') : zh ? '暖纸预览' : 'paper preview';
-        }
-        if (paper) {
+        var metro = new URL(location.href).searchParams.has('metro');
+        if (metro) {
+          document.body.classList.add('metro');
           document.querySelectorAll('.salon-lang a, .salon-backlink').forEach(function (x) {
-            x.href += (x.href.indexOf('?') === -1 ? '?' : '&') + 'paper=1';
+            x.href += (x.href.indexOf('?') === -1 ? '?' : '&') + 'metro=1';
           });
         }
       })();

@@ -88,9 +88,9 @@ npm run preview
   不入仓库；需要时经 wrangler 重置。
 - **双语**：登记时选一种语言填写 talk/food，另一种由 Worker 即时翻译；显示时自动回退。
 - 填 `organizerEmail` 后离线回退表单出现"邮件发给组织者"按钮。
-- **Metro 主题（默认）**：沙龙页默认 Win8 磁贴风浅色主题
-  （`src/styles/salon-metro.css`）；暖纸旧皮暂时隐藏，顶栏"暖纸预览"
-  （或 `?paper=1`）可切回对比。客户端判定，静态构建可用。
+- **Metro 主题（隐藏）**：暖纸为默认皮；Win8 磁贴风保留在
+  `src/styles/salon-metro.css`，无界面入口，仅 `?metro=1` 可激活（暗门）。
+  方块分段按钮与语言组右移为两皮共用。
 - 部署 Worker：`cd workers/salon-api && npx wrangler deploy`（需 `wrangler login`）。
 - **本地预览直播**：开发环境前端指向 `http://localhost:8787`，需先起隧道：
   `cd workers/salon-api && npx wrangler dev --remote --port 8787`（后台常驻；

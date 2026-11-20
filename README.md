@@ -67,7 +67,7 @@ npm run preview
 - `.github/workflows/deploy.yml` 已配置：推送 `main` 自动构建并发布。
 - 首次使用需在仓库 Settings → Pages 中将 Source 设为 **GitHub Actions**。
 
-## 学术沙龙（李政道天文嘉年华 / T. D. Lee Astronomical Jamboree）
+## 学术沙龙（李所天文·疯狂星期五 / T. D. Lee Astronomical Jamboree）
 
 入口在小工具页底部的卡片（不在主导航），独立页面、独立暖纸配色：`/zh/salon/`、`/en/salon/`。
 

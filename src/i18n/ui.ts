@@ -123,7 +123,7 @@ export const ui = {
     'widgets.kicker': 'Widgets',
     'widgets.title': '小工具',
     'widgets.add': '添加新的小工具',
-    'widgets.salon': '李政道天文嘉年华',
+    'widgets.salon': '李所天文·疯狂星期五',
     'widgets.salonDesc': '学术沙龙日历：每月第二个星期五——登记你讲什么、讲多久、想吃什么。',
     'widgets.addDesc': '新的小组件将展示在这里。把组件放入 src/components/widgets/，并在 src/data/widgets.ts 中注册即可。',
     'footer.built': '基于 Astro 构建',

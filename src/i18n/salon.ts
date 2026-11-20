@@ -61,7 +61,7 @@ export const salonUi = {
     back: '返回网站',
     foot: '每月第二个星期五 · 学术沙龙',
     kicker: '学术沙龙',
-    title: '李政道天文嘉年华',
+    title: '李所天文·疯狂星期五',
     tagline: '你决定大家听什么和吃什么',
     lede: '每月第二个星期五举行。',
     calendar: '日历',

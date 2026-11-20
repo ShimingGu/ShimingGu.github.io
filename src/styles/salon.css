@@ -79,6 +79,14 @@ main.salon-main {
   max-width: 46rem;
 }
 
+.salon-tagline {
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #2b2620;
+  margin: 0 0 0.5rem;
+}
+
 .salon-section {
   padding-block: 1.75rem;
 }

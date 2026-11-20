@@ -20,7 +20,7 @@ const t = useTranslations(lang);
           src={p.src}
           alt={p.alt[lang]}
           loading="lazy"
-          data-full={p.hdr ?? p.src}
+          data-full={p.full ?? p.src}
           data-hdr={p.hdr ? 'true' : undefined}
         />
         {p.caption && <figcaption>{p.caption[lang]}</figcaption>}

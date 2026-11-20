@@ -1,127 +1,184 @@
 // ============================================================
 // 摄影作品 —— 把图片放进 public/photos/，在下面登记即可。
-// src 为网格小图；hdr 为带 gain map 的 Ultra HDR 原图（灯箱加载，
-// 支持 HDR 的浏览器/屏幕会自动应用高光层；普通屏幕回落到 SDR）。
-// HDR 原图已去除 EXIF/GPS、保留 gain map 与 ICC；桌面原图不动。
-// 选片来自 Desktop/Photo/processed（2026 Banff / Hexi / Victoria）。
+// src  = 网格小图（SDR）
+// full = 灯箱加载的全分辨率图（public/photos/full/）
+// hdr  = true 表示该全分辨率图带 gain map（Ultra HDR）：
+//        支持 HDR 的浏览器/屏幕自动应用高光层，普通屏幕回落 SDR。
+// 所有发布图已去除 EXIF/GPS；桌面原图不动。
+// 选片来自 Desktop/Photo/processed 五个文件夹，盲挑 24 张。
 // ============================================================
 
 import type { Localized } from './profile';
 
 export interface Photo {
   src: string;
-  hdr?: string;
+  full?: string;
+  hdr?: boolean;
   alt: Localized;
   caption?: Localized;
 }
 
 export const photos: Photo[] = [
   {
+    src: '/photos/van-cottontail.jpg',
+    full: '/photos/full/van-cottontail.jpg',
+    alt: { en: 'A cottontail rabbit sitting alert on green grass', zh: '绿草地上警觉坐定的棉尾兔' },
+    caption: { en: 'A cottontail freezes on the lawn.', zh: '草坪上定住的棉尾兔。' },
+  },
+  {
+    src: '/photos/van-maple-street.jpg',
+    full: '/photos/full/van-maple-street.jpg',
+    hdr: true,
+    alt: { en: 'A street tunnel of red maples with a sunstar through the canopy', zh: '红枫树冠夹道的街道，阳光透过叶隙成星芒' },
+    caption: { en: 'Red maples, sunstar, one street.', zh: '红枫、星芒、一条街。' },
+  },
+  {
+    src: '/photos/van-orange-row.jpg',
+    full: '/photos/full/van-orange-row.jpg',
+    alt: { en: 'A straight row of orange autumn trees along a quiet street', zh: '安静街道旁一排笔直的橙色秋树' },
+    caption: { en: 'An orange colonnade into autumn.', zh: '一排橙色树廊走进秋天。' },
+  },
+  {
+    src: '/photos/yel-mist-tetons.jpg',
+    full: '/photos/full/yel-mist-tetons.jpg',
+    hdr: true,
+    alt: { en: 'Mist layering the Teton peaks above dark pines', zh: '雾把提顿峰峦叠成层次，下方是深色松林' },
+    caption: { en: 'Mist stacks the Tetons into layers.', zh: '雾把提顿山叠成层次。' },
+  },
+  {
+    src: '/photos/yel-chapel-window.jpg',
+    full: '/photos/full/yel-chapel-window.jpg',
+    alt: { en: 'A cross and the Tetons framed inside a chapel window', zh: '教堂窗框里的十字架与提顿山' },
+    caption: { en: 'A cross framed in the chapel window.', zh: '教堂窗框里的十字架。' },
+  },
+  {
+    src: '/photos/yel-barn.jpg',
+    full: '/photos/full/yel-barn.jpg',
+    alt: { en: 'A weathered wooden barn below the Teton range', zh: '提顿山脉下风化的木谷仓' },
+    caption: { en: 'An old barn below the Tetons.', zh: '提顿山下的老谷仓。' },
+  },
+  {
+    src: '/photos/yel-milkyway.jpg',
+    full: '/photos/full/yel-milkyway.jpg',
+    alt: { en: 'The Milky Way rising over a golden field at night', zh: '夜间金色草甸上升起的银河' },
+    caption: { en: 'The Milky Way over a golden field.', zh: '金色草甸上的银河。' },
+  },
+  {
+    src: '/photos/yel-bison-jam.jpg',
+    full: '/photos/full/yel-bison-jam.jpg',
+    hdr: true,
+    alt: { en: 'A bison walking down the road between stopped cars', zh: '野牛在停摆的车流之间沿公路走来' },
+    caption: { en: 'Bison jam: the road belongs to them.', zh: '野牛堵路：路权归它们。' },
+  },
+  {
+    src: '/photos/yel-bison-sparring.jpg',
+    full: '/photos/full/yel-bison-sparring.jpg',
+    hdr: true,
+    alt: { en: 'Two bison locking horns in a grassy field', zh: '草地上顶角相持的两头野牛' },
+    caption: { en: 'Two bison lock horns.', zh: '两头野牛顶角相持。' },
+  },
+  {
+    src: '/photos/yel-prismatic.jpg',
+    full: '/photos/full/yel-prismatic.jpg',
+    hdr: true,
+    alt: { en: 'Grand Prismatic Spring blue water and orange rims with tiny figures on the boardwalk', zh: '大棱镜温泉的蓝水橙边，栈道上的人影作比例尺' },
+    caption: { en: 'Grand Prismatic, boardwalk scale.', zh: '大棱镜温泉，栈道上的人影作比例尺。' },
+  },
+  {
+    src: '/photos/yel-geyser-sunset.jpg',
+    full: '/photos/full/yel-geyser-sunset.jpg',
+    hdr: true,
+    alt: { en: 'Geyser steam glowing against a setting sun', zh: '间歇泉蒸汽在落日里发亮' },
+    caption: { en: 'Geyser steam catches the sunset.', zh: '间歇泉的蒸汽接住落日。' },
+  },
+  {
     src: '/photos/banff-mirror.jpg',
-    hdr: '/photos/hdr/banff-mirror.jpg',
-    alt: {
-      en: 'Snow peaks doubled in the still water of a mountain lake',
-      zh: '雪山倒影折进平静的高山湖面',
-    },
+    full: '/photos/full/banff-mirror.jpg',
+    hdr: true,
+    alt: { en: 'Snow peaks doubled in the still water of a mountain lake', zh: '雪山倒影折进平静的高山湖面' },
     caption: { en: 'Still water, doubled mountains.', zh: '静水把山影折成双份。' },
   },
   {
     src: '/photos/banff-stars.jpg',
-    hdr: '/photos/hdr/banff-stars.jpg',
-    alt: {
-      en: 'Star-filled night sky above a rocky riverbed and silhouetted pines',
-      zh: '河滩乱石与松树剪影之上的满天星斗',
-    },
+    full: '/photos/full/banff-stars.jpg',
+    hdr: true,
+    alt: { en: 'Star-filled night sky above a rocky riverbed and silhouetted pines', zh: '河滩乱石与松树剪影之上的满天星斗' },
     caption: { en: 'Stars over the river stones.', zh: '河滩乱石之上的星空。' },
   },
   {
-    src: '/photos/banff-chipmunk.jpg',
-    hdr: '/photos/hdr/banff-chipmunk.jpg',
-    alt: {
-      en: 'A chipmunk pausing on a fallen log',
-      zh: '倒木上停顿的花栗鼠',
-    },
-    caption: { en: 'A chipmunk pauses on a fallen log.', zh: '倒木上停顿的花栗鼠。' },
+    src: '/photos/banff-rays.jpg',
+    full: '/photos/full/banff-rays.jpg',
+    alt: { en: 'Crepuscular rays breaking over a forested valley', zh: '林谷上空破云而出的光束' },
+    caption: { en: 'Light rays over the valley.', zh: '谷地上空的光束。' },
   },
   {
     src: '/photos/banff-grizzly.jpg',
-    hdr: '/photos/hdr/banff-grizzly.jpg',
-    alt: {
-      en: 'A grizzly bear grazing on grass, undisturbed',
-      zh: '旁若无人觅食的灰熊',
-    },
+    full: '/photos/full/banff-grizzly.jpg',
+    hdr: true,
+    alt: { en: 'A grizzly bear grazing on grass, undisturbed', zh: '旁若无人觅食的灰熊' },
     caption: { en: 'Grizzly grazing, undisturbed.', zh: '旁若无人觅食的灰熊。' },
   },
   {
     src: '/photos/banff-train.jpg',
-    hdr: '/photos/hdr/banff-train.jpg',
-    alt: {
-      en: 'A freight train passing below Castle Mountain',
-      zh: '城堡山下驶过的货运列车',
-    },
+    full: '/photos/full/banff-train.jpg',
+    hdr: true,
+    alt: { en: 'A freight train passing below Castle Mountain', zh: '城堡山下驶过的货运列车' },
     caption: { en: 'A freight train below Castle Mountain.', zh: '城堡山下的货运列车。' },
   },
   {
+    src: '/photos/banff-peace-bridge.jpg',
+    full: '/photos/full/banff-peace-bridge.jpg',
+    hdr: true,
+    alt: { en: 'The red Peace Bridge arcing over the river with Calgary towers behind', zh: '红色和平桥弯过河面，背后是卡尔加里楼群' },
+    caption: { en: 'The Peace Bridge arcs into Calgary.', zh: '和平桥弯进卡尔加里。' },
+  },
+  {
     src: '/photos/banff-bench.jpg',
-    hdr: '/photos/hdr/banff-bench.jpg',
-    alt: {
-      en: 'Two people on a bench beneath a towering rocky peak',
-      zh: '高耸岩峰下长椅上的两个人',
-    },
+    full: '/photos/full/banff-bench.jpg',
+    hdr: true,
+    alt: { en: 'Two people on a bench beneath a towering rocky peak', zh: '高耸岩峰下长椅上的两个人' },
     caption: { en: 'Two people, one very big mountain.', zh: '两个人，和一座很大的山。' },
   },
   {
     src: '/photos/hexi-salt-rails.jpg',
-    hdr: '/photos/hdr/hexi-salt-rails.jpg',
-    alt: {
-      en: 'Old rails leading into the mirror-like Chaka Salt Lake',
-      zh: '茶卡盐湖：旧铁轨伸进天空之镜',
-    },
+    full: '/photos/full/hexi-salt-rails.jpg',
+    hdr: true,
+    alt: { en: 'Old rails leading into the mirror-like Chaka Salt Lake', zh: '茶卡盐湖：旧铁轨伸进天空之镜' },
     caption: { en: 'Rails into the sky mirror, Chaka Salt Lake.', zh: '茶卡盐湖：铁轨伸进天空之镜。' },
   },
   {
     src: '/photos/hexi-stupas.jpg',
-    hdr: '/photos/hdr/hexi-stupas.jpg',
-    alt: {
-      en: 'A row of white Buddhist stupas against a pale sky',
-      zh: '淡色天空下一字排开的白塔',
-    },
+    full: '/photos/full/hexi-stupas.jpg',
+    hdr: true,
+    alt: { en: 'A row of white Buddhist stupas against a pale sky', zh: '淡色天空下一字排开的白塔' },
     caption: { en: 'White stupas in a row.', zh: '一字排开的白塔。' },
   },
   {
     src: '/photos/hexi-danxia.jpg',
-    hdr: '/photos/hdr/hexi-danxia.jpg',
-    alt: {
-      en: 'Layered Danxia ridges glowing in late afternoon light',
-      zh: '暮光里发亮的丹霞层脊',
-    },
+    full: '/photos/full/hexi-danxia.jpg',
+    hdr: true,
+    alt: { en: 'Layered Danxia ridges glowing in late afternoon light', zh: '暮光里发亮的丹霞层脊' },
     caption: { en: 'Danxia ridges in late light.', zh: '暮光里的丹霞脊线。' },
   },
   {
     src: '/photos/hexi-goose.jpg',
-    hdr: '/photos/hdr/hexi-goose.jpg',
-    alt: {
-      en: 'A goose coming in to land on glassy water, reflection below',
-      zh: '雁落镜面，倒影相随',
-    },
+    full: '/photos/full/hexi-goose.jpg',
+    hdr: true,
+    alt: { en: 'A goose coming in to land on glassy water, reflection below', zh: '雁落镜面，倒影相随' },
     caption: { en: 'A goose lands on glass.', zh: '雁落镜面。' },
   },
   {
     src: '/photos/victoria-orcas.jpg',
-    hdr: '/photos/hdr/victoria-orcas.jpg',
-    alt: {
-      en: 'Orcas surfacing side by side off Victoria',
-      zh: '维多利亚外海并肩浮出的虎鲸',
-    },
+    full: '/photos/full/victoria-orcas.jpg',
+    hdr: true,
+    alt: { en: 'Orcas surfacing side by side off Victoria', zh: '维多利亚外海并肩浮出的虎鲸' },
     caption: { en: 'Orcas surfacing off Victoria.', zh: '维多利亚外海浮出的虎鲸。' },
   },
   {
     src: '/photos/victoria-empress.jpg',
-    hdr: '/photos/hdr/victoria-empress.jpg',
-    alt: {
-      en: 'The Empress hotel facade with a Canadian flag above',
-      zh: '旗帜之下的帝后酒店立面',
-    },
+    full: '/photos/full/victoria-empress.jpg',
+    hdr: true,
+    alt: { en: 'The Empress hotel facade with a Canadian flag above', zh: '旗帜之下的帝后酒店立面' },
     caption: { en: 'The Empress under a flag.', zh: '旗帜下的帝后酒店。' },
   },
 ];

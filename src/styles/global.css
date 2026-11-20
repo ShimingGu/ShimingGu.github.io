@@ -135,6 +135,13 @@ main {
   margin: 0;
 }
 
+.page-subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  max-width: 46em;
+  margin: 0.75rem 0 0;
+}
+
 .muted {
   color: var(--muted);
 }

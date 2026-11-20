@@ -48,6 +48,8 @@ export const ui = {
     'status.submitted': 'Submitted',
     'photo.kicker': 'Photography',
     'photo.title': 'Photography',
+    'photo.subtitle':
+      'Open any photo for the full-resolution original — on HDR-capable screens the gain-mapped files show their full highlight range.',
     'photo.empty': 'No photos yet.',
     'photo.hint': 'Add entries in src/data/photos.ts',
     'photo.close': 'Close',
@@ -114,6 +116,7 @@ export const ui = {
     'status.submitted': '已投稿',
     'photo.kicker': 'Photography',
     'photo.title': '摄影',
+    'photo.subtitle': '点开大图体验更佳：支持 HDR 的屏幕会呈现原片的完整高光层次。',
     'photo.empty': '暂无照片。',
     'photo.hint': '在 src/data/photos.ts 中添加条目',
     'photo.close': '关闭',

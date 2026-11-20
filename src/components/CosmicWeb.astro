@@ -7,6 +7,7 @@
   const canvas = document.getElementById('cosmic-web') as HTMLCanvasElement;
   const ctx = canvas.getContext('2d')!;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SPEED = 1.5;
 
   interface WebNode {
     bx: number; by: number; x: number; y: number;
@@ -148,7 +149,7 @@
         ctx.arc(n.x, n.y, n.r * 6, 0, Math.PI * 2);
         ctx.fill();
       }
-      const r = n.r * (1 + 0.12 * Math.sin(t / 1000 * 1.3 + n.ph));
+      const r = n.r * (1 + 0.12 * Math.sin((t / 1000) * 1.3 * SPEED + n.ph));
       ctx.fillStyle = 'rgba(29,29,31,0.75)';
       ctx.beginPath();
       ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
@@ -161,18 +162,19 @@
     if (!document.hidden) {
       const dt = last ? t - last : 16;
       last = t;
+      const st = t * SPEED;
       for (const n of nodes) {
-        n.x = n.bx + Math.sin((t / 1000) * n.sp + n.ph) * n.amp;
-        n.y = n.by + Math.cos((t / 1000) * n.sp * 0.8 + n.ph) * n.amp;
+        n.x = n.bx + Math.sin((st / 1000) * n.sp + n.ph) * n.amp;
+        n.y = n.by + Math.cos((st / 1000) * n.sp * 0.8 + n.ph) * n.amp;
       }
       for (const p of pulses) {
-        p.t += p.v * dt;
+        p.t += p.v * dt * SPEED;
         if (p.t > 1) {
           p.t = 0;
           p.e = Math.floor(Math.random() * edges.length);
         }
       }
-      draw(t);
+      draw(st);
     }
     requestAnimationFrame(loop);
   }

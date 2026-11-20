@@ -39,6 +39,25 @@ export const photos: Photo[] = [
     caption: { en: 'An orange colonnade into autumn.', zh: '一排橙色树廊走进秋天。' },
   },
   {
+    src: '/photos/van-tulips.jpg',
+    full: '/photos/full/van-tulips.jpg',
+    alt: { en: 'Red tulips above a bed of purple muscari', zh: '紫色葡萄风信子上方的红郁金香' },
+    caption: { en: 'Tulips over muscari.', zh: '郁金香与葡萄风信子。' },
+  },
+  {
+    src: '/photos/van-eagle.jpg',
+    full: '/photos/full/van-eagle.jpg',
+    alt: { en: 'An eagle soaring against a clear blue sky', zh: '纯蓝天空中翱翔的鹰' },
+    caption: { en: 'An eagle crosses the blue.', zh: '鹰掠过纯蓝。' },
+  },
+  {
+    src: '/photos/van-fireworks.jpg',
+    full: '/photos/full/van-fireworks.jpg',
+    hdr: true,
+    alt: { en: 'Two firework bursts, orange and gold, over a dark bay', zh: '暗色海湾上空橙金双焰' },
+    caption: { en: 'Two bursts over the bay.', zh: '海湾上空的双焰。' },
+  },
+  {
     src: '/photos/yel-mist-tetons.jpg',
     full: '/photos/full/yel-mist-tetons.jpg',
     hdr: true,
@@ -138,6 +157,26 @@ export const photos: Photo[] = [
     hdr: true,
     alt: { en: 'Sandstone hoodoos with flat caprocks against a pale blue sky', zh: '淡蓝天空下顶着扁平石帽的砂岩土柱' },
     caption: { en: 'Caprock hoodoos in the badlands.', zh: '劣地上顶着石帽的土柱。' },
+  },
+  {
+    src: '/photos/garibaldi-larch-valley.jpg',
+    full: '/photos/full/garibaldi-larch-valley.jpg',
+    alt: { en: 'A mountain valley of golden larches with a pale river below', zh: '金色落叶松的山谷，下方一条浅色河流' },
+    caption: { en: 'Larches turn the valley gold.', zh: '落叶松把山谷染金。' },
+  },
+  {
+    src: '/photos/garibaldi-sunset-river.jpg',
+    full: '/photos/full/garibaldi-sunset-river.jpg',
+    hdr: true,
+    alt: { en: 'A braided river flat under a burning sunset sky between ridges', zh: '燃烧晚霞下两岭之间的辫状河滩' },
+    caption: { en: 'A braided river under a burning sky.', zh: '燃烧天空下的辫状河。' },
+  },
+  {
+    src: '/photos/garibaldi-fog-spruce.jpg',
+    full: '/photos/full/garibaldi-fog-spruce.jpg',
+    hdr: true,
+    alt: { en: 'A lone spruce standing in thick fog', zh: '浓雾中独立的一棵云杉' },
+    caption: { en: 'One spruce in the fog.', zh: '雾里一棵云杉。' },
   },
   {
     src: '/photos/hexi-salt-rails.jpg',

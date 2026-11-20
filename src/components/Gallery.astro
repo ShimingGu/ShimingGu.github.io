@@ -16,7 +16,13 @@ const t = useTranslations(lang);
   {
     photos.map((p, i) => (
       <figure data-index={i} tabindex="0" role="button" aria-label={p.alt[lang]}>
-        <img src={p.src} alt={p.alt[lang]} loading="lazy" />
+        <img
+          src={p.src}
+          alt={p.alt[lang]}
+          loading="lazy"
+          data-full={p.hdr ?? p.src}
+          data-hdr={p.hdr ? 'true' : undefined}
+        />
         {p.caption && <figcaption>{p.caption[lang]}</figcaption>}
       </figure>
     ))
@@ -40,13 +46,15 @@ const t = useTranslations(lang);
 
   if (dialog && img && cap && figs.length > 0) {
     let idx = 0;
+    const hdrDisplay = matchMedia('(dynamic-range: high)').matches;
 
     const show = (i: number) => {
       idx = (i + figs.length) % figs.length;
       const im = figs[idx].querySelector('img')!;
-      img.src = im.src;
+      img.src = im.dataset.full ?? im.src;
       img.alt = im.alt;
-      cap.textContent = figs[idx].querySelector('figcaption')?.textContent ?? '';
+      const text = figs[idx].querySelector('figcaption')?.textContent ?? '';
+      cap.textContent = hdrDisplay && im.dataset.hdr ? text + ' · HDR' : text;
     };
 
     const open = (i: number) => {

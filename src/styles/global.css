@@ -11,6 +11,8 @@
   --faint: #86868b;
   --cyan: #0071e3;
   --cyan-hover: #0077ed;
+  --orange: #ff9500;
+  --orange-hover: #e08600;
   --violet: #6e56cf;
   --gold: #9a6700;
   --line: #d2d2d7;
@@ -421,8 +423,9 @@ main {
 .btn-primary {
   padding: 0.65rem 1.4rem;
   border-radius: 999px;
-  background: var(--cyan);
-  color: #fff;
+  background: var(--orange);
+  color: #1d1d1f;
+  font-weight: 600;
 }
 
 .btn-primary::after {
@@ -430,8 +433,8 @@ main {
 }
 
 .btn-primary:hover {
-  background: #0077ed;
-  color: #fff;
+  background: var(--orange-hover);
+  color: #1d1d1f;
   text-decoration: none;
 }
 
@@ -1047,9 +1050,9 @@ main {
   inset: 0 calc(50% - 50vw);
   z-index: -1;
   background:
-    radial-gradient(60% 80% at 15% 20%, rgba(10, 132, 255, 0.14), transparent 60%),
-    radial-gradient(50% 70% at 85% 30%, rgba(255, 55, 95, 0.1), transparent 60%),
-    radial-gradient(45% 60% at 60% 90%, rgba(191, 90, 242, 0.1), transparent 65%);
+    radial-gradient(60% 80% at 15% 20%, rgba(10, 132, 255, 0.22), transparent 60%),
+    radial-gradient(50% 70% at 85% 30%, rgba(255, 55, 95, 0.16), transparent 60%),
+    radial-gradient(45% 60% at 60% 90%, rgba(191, 90, 242, 0.16), transparent 65%);
 }
 
 .tile-grid {
@@ -1139,6 +1142,85 @@ main {
   .tile-wide {
     grid-column: auto;
   }
+}
+
+/* ---------- zoned hues ---------- */
+
+.chips .chip:nth-child(5n + 1) {
+  background: rgba(10, 132, 255, 0.12);
+  color: #0055d4;
+}
+
+.chips .chip:nth-child(5n + 2) {
+  background: rgba(48, 209, 88, 0.14);
+  color: #1d7a34;
+}
+
+.chips .chip:nth-child(5n + 3) {
+  background: rgba(191, 90, 242, 0.12);
+  color: #8944ab;
+}
+
+.chips .chip:nth-child(5n + 4) {
+  background: rgba(255, 149, 0, 0.16);
+  color: #9a6700;
+}
+
+.chips .chip:nth-child(5n + 5) {
+  background: rgba(255, 55, 95, 0.12);
+  color: #d30f45;
+}
+
+.topic-lss {
+  background: rgba(10, 132, 255, 0.07);
+  border-top: 4px solid #0a84ff;
+}
+
+.topic-lss:hover {
+  background: rgba(10, 132, 255, 0.12);
+}
+
+.topic-systematics {
+  background: rgba(48, 209, 88, 0.08);
+  border-top: 4px solid #30d158;
+}
+
+.topic-systematics:hover {
+  background: rgba(48, 209, 88, 0.14);
+}
+
+.topic-fm {
+  background: rgba(191, 90, 242, 0.07);
+  border-top: 4px solid #bf5af2;
+}
+
+.topic-fm:hover {
+  background: rgba(191, 90, 242, 0.12);
+}
+
+.topic-quantum {
+  background: rgba(255, 149, 0, 0.09);
+  border-top: 4px solid #ff9500;
+}
+
+.topic-quantum:hover {
+  background: rgba(255, 149, 0, 0.15);
+}
+
+.widget-cosmo-calc {
+  background: rgba(10, 132, 255, 0.06);
+}
+
+.widget-group-picker {
+  background: rgba(191, 90, 242, 0.06);
+}
+
+.card-salon {
+  background: rgba(255, 149, 0, 0.08);
+}
+
+.card-salon:hover {
+  background: rgba(255, 149, 0, 0.14);
 }
 
 /* ---------- misc ---------- */

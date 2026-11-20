@@ -33,7 +33,7 @@ const registry = {
       widgets.map((w) => {
         const Widget = registry[w.id];
         return (
-          <section class="widget" style="margin-bottom: 1.25rem;">
+          <section class={`widget widget-${w.id}`} style="margin-bottom: 1.25rem;">
             <div class="widget-head">
               <h3>{w.title[lang]}</h3>
               <p>{w.desc[lang]}</p>
@@ -45,7 +45,7 @@ const registry = {
     }
 
     <a class="card-link" href={getRelativeLocaleUrl(lang, 'salon')} style="display: block; margin-bottom: 1.25rem;">
-      <article class="card">
+      <article class="card card-salon">
         <h3>{t('widgets.salon')}</h3>
         <p>{t('widgets.salonDesc')}</p>
         <span class="card-arrow">→</span>

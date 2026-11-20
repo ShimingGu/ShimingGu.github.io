@@ -12,7 +12,7 @@ const { topic, lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<article class="card">
+<article class={`card topic-${topic.id}`}>
   <h3>{topic.title[lang]}</h3>
   <p>{topic.summary[lang]}</p>
   {

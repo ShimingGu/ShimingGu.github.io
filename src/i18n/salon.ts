@@ -1,6 +1,7 @@
 export const salonUi = {
   en: {
     back: 'Back to site',
+    backToSalon: 'Back to salon calendar',
     foot: 'Second Friday monthly · academic salon',
     kicker: 'Academic salon',
     title: 'T. D. Lee Astronomical Jamboree',
@@ -69,6 +70,7 @@ export const salonUi = {
   },
   zh: {
     back: '返回网站',
+    backToSalon: '返回沙龙日历',
     foot: '每月第二个星期五 · 学术沙龙',
     kicker: '学术沙龙',
     title: '李所天文·疯狂星期五',

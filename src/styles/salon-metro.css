@@ -18,6 +18,15 @@ body.metro .salon-back {
   font-weight: 300;
 }
 
+body.metro .salon-backlink {
+  color: rgba(43, 38, 32, 0.6);
+  font-weight: 300;
+}
+
+body.metro .salon-backlink:hover {
+  color: #1ba1e2;
+}
+
 body.metro .salon-back:hover {
   color: #1ba1e2;
 }

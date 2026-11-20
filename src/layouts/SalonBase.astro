@@ -54,7 +54,7 @@ const path = Astro.url.pathname;
           a.textContent = on ? (zh ? '退出 metro' : 'exit metro') : zh ? 'metro 预览' : 'metro preview';
         }
         if (on) {
-          document.querySelectorAll('.salon-lang a').forEach(function (x) {
+          document.querySelectorAll('.salon-lang a, .salon-backlink').forEach(function (x) {
             x.href += (x.href.indexOf('?') === -1 ? '?' : '&') + 'metro=1';
           });
         }

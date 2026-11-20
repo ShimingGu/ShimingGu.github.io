@@ -1,6 +1,7 @@
 ---
 import { createHash } from 'node:crypto';
 import SalonBase from '../../../layouts/SalonBase.astro';
+import { getRelativeLocaleUrl } from 'astro:i18n';
 import { getLangFromUrl, otherLang } from '../../../i18n/utils';
 import { salonUi } from '../../../i18n/salon';
 import { salon, SALON_YEARS, SALON_RULES, organizerEmail, SALON_API } from '../../../data/salon';
@@ -51,6 +52,7 @@ const other = otherLang(lang);
 
 <SalonBase title={`${titleFmt.format(date)} · ${t.title}`}>
   <section class="salon-hero">
+    <a class="salon-backlink" href={getRelativeLocaleUrl(lang, 'salon')}>← {t.backToSalon}</a>
     <p class="kicker">{t.detailKicker}</p>
     <h1>{titleFmt.format(date)}</h1>
     <p class="session-date">{dateFmt.format(date)}</p>

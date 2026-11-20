@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/salon.css';
+import '../styles/salon-metro.css';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { getLangFromUrl, switchLangPath } from '../i18n/utils';
 import { salonUi } from '../i18n/salon';
@@ -27,13 +28,38 @@ const path = Astro.url.pathname;
     <header class="salon-top">
       <div class="salon-wrap salon-top-inner">
         <a class="salon-back" href={getRelativeLocaleUrl(lang, '')}>← {t.back}</a>
-        <div class="lang-switch salon-lang">
-          <a href={switchLangPath(path, 'en')} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
-          <a href={switchLangPath(path, 'zh')} aria-current={lang === 'zh' ? 'true' : undefined}>中文</a>
+        <div style="display: flex; align-items: center; gap: 0.9rem;">
+          <a class="metro-toggle" id="metro-toggle" href={path + '?metro=1'}>
+            {lang === 'zh' ? 'metro 预览' : 'metro preview'}
+          </a>
+          <div class="lang-switch salon-lang">
+            <a href={switchLangPath(path, 'en')} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+            <a href={switchLangPath(path, 'zh')} aria-current={lang === 'zh' ? 'true' : undefined}>中文</a>
+          </div>
         </div>
       </div>
       <div class="salon-checker" aria-hidden="true"></div>
     </header>
+    <script is:inline>
+      (function () {
+        var on = new URL(location.href).searchParams.has('metro');
+        if (on) document.body.classList.add('metro');
+        var zh = document.documentElement.lang.startsWith('zh');
+        var a = document.getElementById('metro-toggle');
+        if (a) {
+          var t = new URL(location.href);
+          if (on) t.searchParams.delete('metro');
+          else t.searchParams.set('metro', '1');
+          a.href = t.pathname + t.search;
+          a.textContent = on ? (zh ? '退出 metro' : 'exit metro') : zh ? 'metro 预览' : 'metro preview';
+        }
+        if (on) {
+          document.querySelectorAll('.salon-lang a').forEach(function (x) {
+            x.href += (x.href.indexOf('?') === -1 ? '?' : '&') + 'metro=1';
+          });
+        }
+      })();
+    </script>
     <main class="salon-wrap salon-main">
       <slot />
     </main>

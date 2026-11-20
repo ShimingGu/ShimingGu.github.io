@@ -1,0 +1,367 @@
+/* Microsoft Metro / Win8 start-screen experiment, scoped to body.metro.
+   Flat solid tiles, sharp corners, Segoe UI Light type, no shadows. */
+
+body.metro {
+  background: #f4efe4;
+  color: #2b2620;
+  font-family: 'Segoe UI', 'Segoe UI Variable Text', 'Helvetica Neue', 'PingFang SC',
+    'Microsoft YaHei', sans-serif;
+}
+
+body.metro .salon-top {
+  background: #f4efe4;
+  border-bottom: none;
+}
+
+body.metro .salon-back {
+  color: #2b2620;
+  font-weight: 300;
+}
+
+body.metro .salon-back:hover {
+  color: #1ba1e2;
+}
+
+body.metro .salon-lang {
+  border: 2px solid #2b2620;
+  border-radius: 0;
+}
+
+body.metro .salon-lang a {
+  color: rgba(43, 38, 32, 0.6);
+  border-radius: 0;
+}
+
+body.metro .salon-lang a[aria-current='true'] {
+  background: #ff0097;
+  color: #ffffff;
+}
+
+body.metro .salon-lang a:not([aria-current]):hover {
+  background: rgba(43, 38, 32, 0.08);
+  color: #2b2620;
+}
+
+body.metro .metro-toggle {
+  color: rgba(43, 38, 32, 0.6);
+  font-size: 0.8rem;
+  font-weight: 400;
+  border: 2px solid rgba(43, 38, 32, 0.4);
+  padding: 0.25rem 0.7rem;
+}
+
+body.metro .metro-toggle:hover {
+  color: #2b2620;
+  border-color: #2b2620;
+}
+
+body.metro .salon-hero h1 {
+  font-weight: 200;
+  font-size: clamp(2.8rem, 8vw, 5rem);
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  color: #2b2620;
+}
+
+body.metro .kicker {
+  color: rgba(43, 38, 32, 0.55);
+  font-weight: 400;
+  text-transform: lowercase;
+  letter-spacing: 0;
+}
+
+body.metro .salon-tagline {
+  color: #2b2620;
+  font-weight: 300;
+}
+
+body.metro .lede,
+body.metro .session-date {
+  color: rgba(43, 38, 32, 0.6);
+  font-weight: 300;
+}
+
+body.metro .salon-h2 {
+  font-weight: 200;
+  font-size: 1.9rem;
+  text-transform: lowercase;
+  color: #2b2620;
+}
+
+body.metro .cal-year {
+  font-weight: 200;
+  color: #2b2620;
+}
+
+body.metro .cal-nav {
+  border: 2px solid #2b2620;
+  border-radius: 0;
+  background: transparent;
+  color: #2b2620;
+}
+
+body.metro .cal-nav:hover:not(:disabled) {
+  background: #2b2620;
+  color: #f4efe4;
+}
+
+body.metro .cal-grid {
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+body.metro .cal-card {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  aspect-ratio: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #ffffff;
+  transition: filter 0.1s;
+}
+
+body.metro .cal-card:hover {
+  transform: none;
+  box-shadow: none;
+  filter: brightness(1.15);
+  color: #ffffff;
+}
+
+body.metro .cal-card:nth-child(12n + 1) { background: #1ba1e2; }
+body.metro .cal-card:nth-child(12n + 2) { background: #00aba9; }
+body.metro .cal-card:nth-child(12n + 3) { background: #a200ff; }
+body.metro .cal-card:nth-child(12n + 4) { background: #ff0097; }
+body.metro .cal-card:nth-child(12n + 5) { background: #f09609; }
+body.metro .cal-card:nth-child(12n + 6) { background: #00a300; }
+body.metro .cal-card:nth-child(12n + 7) { background: #e51400; }
+body.metro .cal-card:nth-child(12n + 8) { background: #6a00ff; }
+body.metro .cal-card:nth-child(12n + 9) { background: #0050ef; }
+body.metro .cal-card:nth-child(12n + 10) { background: #339933; }
+body.metro .cal-card:nth-child(12n + 11) { background: #e671b8; }
+body.metro .cal-card:nth-child(12n + 12) { background: #a05000; }
+
+body.metro .cal-card.past {
+  opacity: 0.38;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+body.metro .cal-card.current {
+  grid-column: span 2;
+  aspect-ratio: auto;
+  background: #ff0097;
+  color: #ffffff;
+}
+
+body.metro .cal-month {
+  font-weight: 200;
+  font-size: 1.7rem;
+  text-transform: lowercase;
+  color: inherit;
+}
+
+body.metro .cal-date {
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 0.75rem;
+  opacity: 0.85;
+  color: inherit;
+}
+
+body.metro .cal-tag {
+  border: none;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit;
+  text-transform: lowercase;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+body.metro .cal-stats {
+  margin-top: auto;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: inherit;
+}
+
+body.metro .budget-row span:first-child {
+  color: rgba(43, 38, 32, 0.6);
+  font-weight: 300;
+}
+
+body.metro .budget-total {
+  color: #2b2620;
+  font-weight: 200;
+  font-size: 1.6rem;
+}
+
+body.metro .budget-bar {
+  border: 2px solid #2b2620;
+  border-radius: 0;
+  background: transparent;
+  height: 20px;
+}
+
+body.metro .budget-fill {
+  background: #00a300;
+}
+
+body.metro .budget-mark {
+  background: #2b2620;
+}
+
+body.metro .budget-scale {
+  font-family: inherit;
+  color: rgba(43, 38, 32, 0.5);
+}
+
+body.metro .live-status.is-live {
+  color: #00a300;
+}
+
+body.metro .live-status.is-offline {
+  color: #e51400;
+}
+
+body.metro .rules {
+  color: rgba(43, 38, 32, 0.6);
+  border-left: 4px solid #1ba1e2;
+  font-weight: 300;
+}
+
+body.metro .lineup-entry {
+  border: none;
+  border-left: 6px solid #1ba1e2;
+  border-radius: 0;
+  background: #fffdf7;
+  padding: 14px 16px;
+}
+
+body.metro .lineup-who {
+  color: #2b2620;
+  font-weight: 600;
+}
+
+body.metro .lineup-min {
+  color: #f09609;
+  font-weight: 600;
+}
+
+body.metro .lineup-talk {
+  color: #2b2620;
+  font-weight: 300;
+}
+
+body.metro .lineup-food {
+  color: rgba(43, 38, 32, 0.55);
+}
+
+body.metro .salon-form {
+  background: #fffdf7;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.metro .salon-form label {
+  color: rgba(43, 38, 32, 0.5);
+  text-transform: lowercase;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+body.metro .salon-form input,
+body.metro .salon-form textarea {
+  background: #ffffff;
+  border: 2px solid rgba(43, 38, 32, 0.35);
+  border-radius: 0;
+  color: #2b2620;
+  font-family: inherit;
+}
+
+body.metro .salon-form input:focus,
+body.metro .salon-form textarea:focus {
+  border-color: #1ba1e2;
+  box-shadow: none;
+}
+
+body.metro .salon-form .segmented {
+  background: transparent;
+  padding: 0;
+  gap: 1.4rem;
+  border-radius: 0;
+}
+
+body.metro .salon-form .segmented button {
+  border-radius: 0;
+  padding: 0.3rem 0;
+  color: rgba(43, 38, 32, 0.5);
+  font-weight: 400;
+  font-size: 1.05rem;
+  text-transform: lowercase;
+  background: transparent;
+}
+
+body.metro .salon-form .segmented button[aria-pressed='true'] {
+  background: transparent;
+  color: #2b2620;
+  font-weight: 600;
+  border-bottom: 3px solid #ff0097;
+  box-shadow: none;
+}
+
+body.metro .btn-salon {
+  border: none;
+  border-radius: 0;
+  background: #1ba1e2;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+body.metro .btn-salon:hover {
+  background: #1478c8;
+  color: #ffffff;
+}
+
+body.metro .btn-salon.ghost {
+  background: transparent;
+  border: 2px solid #2b2620;
+  color: #2b2620;
+}
+
+body.metro .btn-salon.ghost:hover {
+  background: #2b2620;
+  color: #f4efe4;
+}
+
+body.metro .export-box {
+  border-top: 2px solid rgba(43, 38, 32, 0.25);
+}
+
+body.metro .export-box textarea {
+  background: #ffffff;
+  border: 2px solid rgba(43, 38, 32, 0.35);
+  border-radius: 0;
+  color: #2b2620;
+}
+
+body.metro .form-msg.ok {
+  color: #00a300;
+}
+
+body.metro .form-msg.error {
+  color: #e51400;
+}
+
+body.metro .edit-hint,
+body.metro .will-total,
+body.metro .export-hint {
+  color: rgba(43, 38, 32, 0.5);
+}
+
+body.metro .salon-foot {
+  color: rgba(43, 38, 32, 0.4);
+}

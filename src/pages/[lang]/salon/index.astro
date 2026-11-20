@@ -2,7 +2,7 @@
 import SalonBase from '../../../layouts/SalonBase.astro';
 import { getLangFromUrl } from '../../../i18n/utils';
 import { salonUi } from '../../../i18n/salon';
-import { salon, SALON_YEARS } from '../../../data/salon';
+import { salon, SALON_YEARS, SALON_API } from '../../../data/salon';
 import { monthKey, totalMinutes } from '../../../lib/salon';
 import type { Lang } from '../../../i18n/ui';
 
@@ -48,7 +48,7 @@ for (const year of SALON_YEARS) {
   <script
     type="application/json"
     id="salon-cal-data"
-    set:html={JSON.stringify({ stats, years: SALON_YEARS }).replace(/</g, '\\u003c')}
+    set:html={JSON.stringify({ stats, years: SALON_YEARS, api: SALON_API }).replace(/</g, '\\u003c')}
   />
 </SalonBase>
 
@@ -56,7 +56,7 @@ for (const year of SALON_YEARS) {
   import { secondFriday, monthKey } from '../../../lib/salon';
   import { salonUi } from '../../../i18n/salon';
 
-  const { stats, years } = JSON.parse(document.getElementById('salon-cal-data')!.textContent!);
+  const { stats, years, api } = JSON.parse(document.getElementById('salon-cal-data')!.textContent!);
   const lang = document.documentElement.lang.startsWith('zh') ? 'zh' : 'en';
   const t = salonUi[lang];
   const grid = document.getElementById('cal-grid')!;
@@ -136,4 +136,12 @@ for (const year of SALON_YEARS) {
     render();
   });
   render();
+
+  fetch(`${api}/stats`, { signal: AbortSignal.timeout(8000) })
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error('bad status'))))
+    .then((j) => {
+      Object.assign(stats, j.stats);
+      render();
+    })
+    .catch(() => {});
 </script>

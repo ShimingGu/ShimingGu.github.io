@@ -23,6 +23,9 @@ export const SALON_RULES = { perMin: 10, totalMin: 20, totalMax: 60 };
 // TODO: 填组织者邮箱后，报名表单会出现"邮件发给组织者"按钮
 export const organizerEmail = '';
 
+// 即时报名后端（Cloudflare Worker + KV + Workers AI 翻译）
+export const SALON_API = 'https://salon-api.shiminggu.workers.dev';
+
 export const salon: Record<string, SalonEntry[]> = {
   // 示例（去掉注释并修改即可上线一期阵容）：
   // '2026-12': [

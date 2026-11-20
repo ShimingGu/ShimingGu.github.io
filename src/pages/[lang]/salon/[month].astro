@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import SalonBase from '../../../layouts/SalonBase.astro';
 import { getLangFromUrl, otherLang } from '../../../i18n/utils';
 import { salonUi } from '../../../i18n/salon';
-import { salon, SALON_YEARS, SALON_RULES, organizerEmail } from '../../../data/salon';
+import { salon, SALON_YEARS, SALON_RULES, organizerEmail, SALON_API } from '../../../data/salon';
 import { secondFriday, monthKey, totalMinutes } from '../../../lib/salon';
 import type { Lang } from '../../../i18n/ui';
 
@@ -28,9 +28,8 @@ const entries = salon[month] ?? [];
 const total = totalMinutes(entries);
 const isPast = date < new Date();
 
-// identifier 是私有修改凭证：客户端只接收 SHA-256 哈希
-const clientEntries = entries.map((e) => ({
-  idHash: createHash('sha256').update(e.id.trim().toLowerCase()).digest('hex'),
+// 仓库快照仅作离线回退；直播数据来自 Worker。identifier 哈希不出服务端。
+const snapshot = entries.map((e) => ({
   who: e.who,
   minutes: e.minutes,
   talk: e.talk,
@@ -58,10 +57,10 @@ const other = otherLang(lang);
 
     <div class="budget-row">
       <span>{t.budget}</span>
-      <span class="budget-total">{t.total} {total}/60 {t.minUnit}</span>
+      <span class="budget-total" id="budget-total">{t.total} {total}/60 {t.minUnit}</span>
     </div>
     <div class="budget-bar">
-      <div class="budget-fill" style={`width: ${(total / SALON_RULES.totalMax) * 100}%`}></div>
+      <div class="budget-fill" id="budget-fill" style={`width: ${(total / SALON_RULES.totalMax) * 100}%`}></div>
       <div class="budget-mark" style={`left: ${(SALON_RULES.totalMin / SALON_RULES.totalMax) * 100}%`}></div>
     </div>
     <div class="budget-scale">
@@ -69,17 +68,18 @@ const other = otherLang(lang);
       <span>{SALON_RULES.totalMin}</span>
       <span>{SALON_RULES.totalMax} {t.minUnit}</span>
     </div>
+    <p class="live-status" id="live-status"></p>
     <p class="rules">{t.rules}</p>
   </section>
 
   <section class="salon-section">
     <h2 class="salon-h2">{t.lineup}</h2>
-    {
-      entries.length === 0 ? (
-        <p style="color: #7d7466;">{t.noEntries}</p>
-      ) : (
-        <div class="lineup">
-          {entries.map((e) => (
+    <div class="lineup" id="lineup">
+      {
+        entries.length === 0 ? (
+          <p style="color: #7d7466;">{t.noEntries}</p>
+        ) : (
+          entries.map((e) => (
             <article class="lineup-entry">
               <div class="lineup-head">
                 <span class="lineup-who">{e.who}</span>
@@ -93,10 +93,10 @@ const other = otherLang(lang);
                 {e.food[lang] || e.food[other]}
               </p>
             </article>
-          ))}
-        </div>
-      )
-    }
+          ))
+        )
+      }
+    </div>
   </section>
 
   {
@@ -121,14 +121,10 @@ const other = otherLang(lang);
               </button>
             </div>
           </div>
-          <div class="form-row">
-            <div class="field" style="flex: 1; min-width: 200px; margin: 0;">
-              <label for="sf-id">{t.idLabel}</label>
-              <input id="sf-id" maxlength="24" autocomplete="off" />
-            </div>
-            <button type="button" class="btn-salon ghost" id="sf-load" hidden>
-              {t.load}
-            </button>
+          <p class="edit-hint" id="edit-hint" hidden>{t.editHint}</p>
+          <div class="field">
+            <label for="sf-id">{t.idLabel}</label>
+            <input id="sf-id" maxlength="24" autocomplete="off" />
           </div>
           <div class="field">
             <label for="sf-who">{t.whoLabel}</label>
@@ -173,22 +169,15 @@ const other = otherLang(lang);
   <script
     type="application/json"
     id="salon-session-data"
-    set:html={JSON.stringify({ month, entries: clientEntries, organizerEmail }).replace(/</g, '\\u003c')}
+    set:html={JSON.stringify({ month, entries: snapshot, organizerEmail, api: SALON_API }).replace(/</g, '\\u003c')}
   />
 </SalonBase>
 
 <script>
-  import {
-    checkFields,
-    checkNew,
-    checkEdit,
-    exportText,
-    totalMinutes,
-    hashId,
-  } from '../../../lib/salon';
+  import { checkFields, checkNew, exportText, totalMinutes } from '../../../lib/salon';
   import { salonUi } from '../../../i18n/salon';
 
-  const { month, entries, organizerEmail } = JSON.parse(
+  const { month, entries: snapshot, organizerEmail, api } = JSON.parse(
     document.getElementById('salon-session-data')!.textContent!,
   );
   const lang = document.documentElement.lang.startsWith('zh') ? 'zh' : 'en';
@@ -206,130 +195,111 @@ const other = otherLang(lang);
   const textOut = $('sf-text');
   const copyBtn = $('sf-copy');
   const mailLink = $('sf-mail');
-  const loadBtn = $('sf-load');
   const submitBtn = $('sf-submit');
   const willEl = $('sf-will');
+  const lineupEl = $('lineup');
+  const statusEl = $('live-status');
 
+  let entries = snapshot;
+  let live = false;
   let mode = 'new';
   let ilang = lang;
-  let loaded = null;
-
-  const baseTotal = totalMinutes(entries);
 
   function say(key, ok) {
     msg.textContent = key ? t[key] : '';
     msg.className = 'form-msg ' + (ok ? 'ok' : 'error');
   }
 
-  function hideExport() {
-    exportBox.hidden = true;
+  function renderLineup() {
+    lineupEl.replaceChildren();
+    if (entries.length === 0) {
+      const p = document.createElement('p');
+      p.style.color = '#7d7466';
+      p.textContent = t.noEntries;
+      lineupEl.append(p);
+      return;
+    }
+    for (const e of entries) {
+      const art = document.createElement('article');
+      art.className = 'lineup-entry';
+      const head = document.createElement('div');
+      head.className = 'lineup-head';
+      const who = document.createElement('span');
+      who.className = 'lineup-who';
+      who.textContent = e.who;
+      const min = document.createElement('span');
+      min.className = 'lineup-min';
+      min.textContent = `${e.minutes} ${t.minUnit}`;
+      head.append(who, min);
+      const talk = document.createElement('p');
+      talk.className = 'lineup-talk';
+      talk.textContent = e.talk[lang] || e.talk[other];
+      const food = document.createElement('p');
+      food.className = 'lineup-food';
+      food.textContent = (lang === 'zh' ? '想吃：' : 'Wants: ') + (e.food[lang] || e.food[other]);
+      art.append(head, talk, food);
+      lineupEl.append(art);
+    }
+  }
+
+  function updateBudget() {
+    const total = totalMinutes(entries);
+    $('budget-total').textContent = `${t.total} ${total}/60 ${t.minUnit}`;
+    $('budget-fill').style.width = `${(total / 60) * 100}%`;
+  }
+
+  function setStatus() {
+    statusEl.textContent = live ? t.live : t.offline;
+    statusEl.className = 'live-status ' + (live ? 'is-live' : 'is-offline');
+  }
+
+  async function loadLive() {
+    statusEl.textContent = t.loading;
+    try {
+      const r = await fetch(`${api}/salon/${month}`, { signal: AbortSignal.timeout(8000) });
+      if (!r.ok) throw new Error('bad status');
+      const j = await r.json();
+      entries = j.entries;
+      live = true;
+      renderLineup();
+      updateBudget();
+    } catch {
+      live = false;
+    }
+    setStatus();
+  }
+
+  async function refresh() {
+    const r = await fetch(`${api}/salon/${month}`, { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) throw new Error('bad status');
+    entries = (await r.json()).entries;
+    renderLineup();
+    updateBudget();
   }
 
   function updateWill() {
+    if (mode !== 'new') {
+      willEl.textContent = '';
+      return;
+    }
     const m = parseInt(minIn.value, 10);
     if (!Number.isInteger(m)) {
       willEl.textContent = '';
       return;
     }
-    const prospective = mode === 'edit' && loaded ? baseTotal - loaded.minutes + m : baseTotal + m;
-    willEl.textContent = `${t.willTotal} ${prospective}/60 ${t.minUnit}`;
+    willEl.textContent = `${t.willTotal} ${totalMinutes(entries) + m}/60 ${t.minUnit}`;
   }
 
-  async function loadEntry() {
-    const hash = await hashId(idIn.value);
-    loaded = entries.find((e) => e.idHash === hash) ?? null;
-    if (!loaded) {
-      say('errIdUnknown', false);
-      return;
-    }
-    minIn.value = String(loaded.minutes);
-    whoIn.value = loaded.who;
-    talkIn.value = loaded.talk[ilang] || loaded.talk[other];
-    foodIn.value = loaded.food[ilang] || loaded.food[other];
-    say('loaded', true);
-    hideExport();
-    updateWill();
-  }
-
-  document.querySelectorAll('#mode-seg button').forEach((btn) =>
-    btn.addEventListener('click', () => {
-      mode = btn.dataset.mode;
-      document
-        .querySelectorAll('#mode-seg button')
-        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-      loadBtn.hidden = mode !== 'edit';
-      submitBtn.textContent = mode === 'new' ? t.submitNew : t.submitEdit;
-      loaded = null;
-      say(null, false);
-      hideExport();
-      updateWill();
-    }),
-  );
-
-  document.querySelectorAll('#lang-seg button').forEach((btn) =>
-    btn.addEventListener('click', () => {
-      ilang = btn.dataset.ilang;
-      document
-        .querySelectorAll('#lang-seg button')
-        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-      if (mode === 'edit' && loaded) {
-        talkIn.value = loaded.talk[ilang] || loaded.talk[other];
-        foodIn.value = loaded.food[ilang] || loaded.food[other];
-      }
-    }),
-  );
-
-  loadBtn.addEventListener('click', loadEntry);
-  minIn.addEventListener('input', updateWill);
-
-  submitBtn.addEventListener('click', async () => {
-    const id = idIn.value.trim();
-    const who = whoIn.value;
-    const minutes = parseInt(minIn.value, 10);
-    const talk = talkIn.value;
-    const food = foodIn.value;
-
-    const fieldErr = checkFields(id, who, minutes, talk, food);
-    if (fieldErr) {
-      say(fieldErr, false);
-      hideExport();
-      return;
-    }
-
-    const hash = await hashId(id);
-    let err;
-    let entry;
-    if (mode === 'new') {
-      err = checkNew(entries, hash, minutes);
-      entry = {
-        id,
-        who,
-        minutes,
-        talk: { zh: ilang === 'zh' ? talk : '', en: ilang === 'en' ? talk : '' },
-        food: { zh: ilang === 'zh' ? food : '', en: ilang === 'en' ? food : '' },
-      };
-    } else {
-      if (!loaded || loaded.idHash !== hash) {
-        say('errIdUnknown', false);
-        hideExport();
-        return;
-      }
-      err = checkEdit(entries, hash, minutes);
-      entry = {
-        id,
-        who,
-        minutes,
-        talk: { ...loaded.talk, [ilang]: talk },
-        food: { ...loaded.food, [ilang]: food },
-      };
-    }
-
-    if (err) {
+  function offlineExport(entry) {
+    const err = checkNew(
+      entries.map((e) => ({ ...e, idHash: '' })),
+      '__offline_no_dup_check__',
+      entry.minutes,
+    );
+    if (mode === 'new' && err) {
       say(err, false);
-      hideExport();
       return;
     }
-
     say(mode === 'new' ? 'okNew' : 'okEdit', true);
     textOut.value = exportText(month, mode, entry);
     exportBox.hidden = false;
@@ -340,6 +310,111 @@ const other = otherLang(lang);
         `?subject=${encodeURIComponent(`[SALON ${month}] ${mode === 'new' ? 'signup' : 'change'}: ${entry.who}`)}` +
         `&body=${encodeURIComponent(textOut.value)}`;
     }
+  }
+
+  document.querySelectorAll('#mode-seg button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      mode = btn.dataset.mode;
+      document
+        .querySelectorAll('#mode-seg button')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      submitBtn.textContent = mode === 'new' ? t.submitNew : t.submitEdit;
+      $('edit-hint').hidden = mode !== 'edit';
+      if (mode === 'edit') {
+        whoIn.value = '';
+        talkIn.value = '';
+        foodIn.value = '';
+        minIn.value = '';
+        whoIn.placeholder = t.editPlaceholder;
+        talkIn.placeholder = t.editPlaceholder;
+        foodIn.placeholder = t.editPlaceholder;
+        minIn.placeholder = t.editPlaceholder;
+      } else {
+        whoIn.placeholder = '';
+        talkIn.placeholder = '';
+        foodIn.placeholder = '';
+        minIn.placeholder = '';
+        minIn.value = '20';
+      }
+      say(null, false);
+      exportBox.hidden = true;
+      updateWill();
+    }),
+  );
+
+  document.querySelectorAll('#lang-seg button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      ilang = btn.dataset.ilang;
+      document
+        .querySelectorAll('#lang-seg button')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    }),
+  );
+
+  minIn.addEventListener('input', updateWill);
+
+  submitBtn.addEventListener('click', async () => {
+    const id = idIn.value.trim();
+    const who = whoIn.value.trim();
+    const minutesRaw = minIn.value.trim();
+    const minutes = minutesRaw === '' ? undefined : parseInt(minutesRaw, 10);
+    const talk = talkIn.value.trim();
+    const food = foodIn.value.trim();
+
+    if (!id) {
+      say('errIdEmpty', false);
+      return;
+    }
+    if (mode === 'new') {
+      const fieldErr = checkFields(id, who, minutes ?? NaN, talk, food);
+      if (fieldErr) {
+        say(fieldErr, false);
+        return;
+      }
+    } else if (minutes !== undefined && (!Number.isInteger(minutes) || minutes < 10)) {
+      say(!Number.isInteger(minutes) ? 'errMinutesInt' : 'errPerMin', false);
+      return;
+    }
+
+    const payload = { id, lang: ilang };
+    if (who) payload.who = who;
+    if (minutes !== undefined) payload.minutes = minutes;
+    if (talk) payload.talk = talk;
+    if (food) payload.food = food;
+
+    if (live) {
+      try {
+        const r = await fetch(`${api}/salon/${month}`, {
+          method: mode === 'new' ? 'POST' : 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(30000),
+        });
+        const j = await r.json();
+        if (!r.ok) {
+          say(j.error && t[j.error] ? j.error : 'errGeneric', false);
+          return;
+        }
+        if (mode === 'new') entries.push(j.entry);
+        else await refresh();
+        renderLineup();
+        updateBudget();
+        exportBox.hidden = true;
+        say(mode === 'new' ? 'okLive' : 'okEditLive', true);
+        return;
+      } catch {
+        // network dropped mid-submit: fall back to export flow
+      }
+    }
+
+    const entry = {
+      id,
+      who: who || '(edit)',
+      minutes: minutes ?? 20,
+      talk: { zh: ilang === 'zh' ? talk : '', en: ilang === 'en' ? talk : '' },
+      food: { zh: ilang === 'zh' ? food : '', en: ilang === 'en' ? food : '' },
+    };
+    offlineExport(entry);
   });
 
   copyBtn.addEventListener('click', async () => {
@@ -354,5 +429,8 @@ const other = otherLang(lang);
     setTimeout(() => (copyBtn.textContent = original), 1500);
   });
 
+  renderLineup();
+  updateBudget();
   updateWill();
+  loadLive();
 </script>

@@ -289,6 +289,28 @@ main.salon-main {
   line-height: 1.7;
 }
 
+.live-status {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin: 0.9rem 0 0;
+  color: #7d7466;
+}
+
+.live-status.is-live {
+  color: #3f7d5c;
+}
+
+.live-status.is-offline {
+  color: #b3261e;
+}
+
+.edit-hint {
+  font-size: 0.82rem;
+  color: #7d7466;
+  margin: 0 0 1rem;
+}
+
 .lineup {
   display: grid;
   gap: 0.8rem;

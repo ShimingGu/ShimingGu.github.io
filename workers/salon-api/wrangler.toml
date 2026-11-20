@@ -1,0 +1,14 @@
+name = "salon-api"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+[[kv_namespaces]]
+binding = "SALON_KV"
+id = "4509ba323ff34382afc8cb1f432c0cec"
+
+[ai]
+binding = "AI"
+
+[vars]
+ALLOWED_ORIGINS = "http://localhost:4321,http://127.0.0.1:4321,https://shiminggu.github.io"
+TRANSLATE_MODEL = "@cf/openai/gpt-oss-20b"

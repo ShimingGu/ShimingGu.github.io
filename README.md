@@ -72,14 +72,23 @@ npm run preview
 入口在小工具页底部的卡片（不在主导航），独立页面、独立暖纸配色：`/zh/salon/`、`/en/salon/`。
 
 - **日历**：每月第二个星期五；年份范围改 `src/data/salon.ts` 的 `SALON_YEARS`。
-- **共享看板数据**：`src/data/salon.ts` 的 `salon`，由组织者维护（或叫 AI 刷新写入）。
-  页面表单只做规则校验 + 生成报名文本（复制 / 邮件），不直接写看板。
-- **identifier 是私有修改凭证**：不公开显示，客户端只接收 SHA-256 哈希；
-  `who`（我是谁）才是公开显示名。凭 identifier 可载入并修改自己的登记。
-- **规则**（`src/lib/salon.ts`）：每人 ≥10 分钟；全场 20–60 分钟；
-  第一位讲者 ≥20 分钟，之后有人加入可下调自己的时间。
-- **双语**：登记时选一种语言填写 talk/food，另一种留空待翻译刷新；显示时自动回退。
-- 填 `organizerEmail` 后表单出现"邮件发给组织者"按钮。
+- **即时报名**：直播数据在 Cloudflare Worker + KV（`workers/salon-api/`，
+  线上 `https://salon-api.shiminggu.workers.dev`）。报名 POST 即上看板，
+  规则校验在服务端（复用 `src/lib/salon.ts`），identifier 只以 SHA-256 哈希存储。
+- **规则**：每人 ≥10 分钟；全场 20–60 分钟；第一位讲者 ≥20 分钟，
+  之后有人加入可下调自己的时间；identifier 全场唯一（大小写不敏感）。
+- **即时翻译**：Worker 调 Workers AI（主 `@cf/openai/gpt-oss-20b`，
+  兜底 `@cf/qwen/qwen3.8-27b` → `m2m100-1.2b`），免费额度内；失败留空槽不挡报名。
+- **离线回退**：Worker 不可达时页面降级为仓库快照 + 导出报名文本流程
+  （`src/data/salon.ts` 的 `salon` 即离线快照）。
+- **网络注意**：workers.dev 在大陆直连被 SNI 阻断；Chrome/Edge 等支持 ECH 的浏览器
+  可直连，不支持的浏览器自动走离线回退。观众默认有国际线（组织者前提）。
+- **管理修正**：`PUT /admin/:month`（header `X-Admin-Key`）可改/删任意登记；
+  密钥存 Worker secret（`wrangler secret put ADMIN_KEY`，在 `workers/salon-api/` 下运行），
+  不入仓库；需要时经 wrangler 重置。
+- **双语**：登记时选一种语言填写 talk/food，另一种由 Worker 即时翻译；显示时自动回退。
+- 填 `organizerEmail` 后离线回退表单出现"邮件发给组织者"按钮。
+- 部署 Worker：`cd workers/salon-api && npx wrangler deploy`（需 `wrangler login`）。
 
 ## 目录结构
 

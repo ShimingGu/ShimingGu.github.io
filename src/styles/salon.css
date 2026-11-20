@@ -428,40 +428,29 @@ main.salon-main {
 .salon-form .segmented {
   display: inline-flex;
   border: none;
-  background: transparent;
-  border-radius: 0;
-  overflow: visible;
-  padding: 0;
-  gap: 0.5rem;
+  background: rgba(43, 38, 32, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  padding: 2px;
 }
 
 .salon-form .segmented button {
-  background: #fffdf7;
-  border: 2px solid #2b2620;
-  border-radius: 0;
-  color: #2b2620;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  color: #7d7466;
   font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.35rem 1rem;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.2s, color 0.2s;
 }
 
-.salon-form .segmented button:hover {
-  background: rgba(43, 38, 32, 0.08);
-}
-
-.salon-form #mode-seg button[aria-pressed='true'] {
-  background: #ff0097;
-  border-color: #ff0097;
-  color: #ffffff;
-}
-
-.salon-form #lang-seg button[aria-pressed='true'] {
-  background: #1ba1e2;
-  border-color: #1ba1e2;
-  color: #ffffff;
+.salon-form .segmented button[aria-pressed='true'] {
+  background: #2b2620;
+  color: #f4efe4;
+  font-weight: 600;
 }
 
 .form-row {

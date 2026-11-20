@@ -24,7 +24,12 @@ export const SALON_RULES = { perMin: 10, totalMin: 20, totalMax: 60 };
 export const organizerEmail = '';
 
 // 即时报名后端（Cloudflare Worker + KV + Workers AI 翻译）
-export const SALON_API = 'https://salon-api.shiminggu.workers.dev';
+// 开发环境走 wrangler dev --remote 的本地隧道（workers.dev 在大陆直连被 SNI 阻断）；
+// 生产走 workers.dev（观众默认有国际线 / ECH 浏览器）。
+const isDev = (import.meta as { env?: { DEV?: boolean } }).env?.DEV === true;
+export const SALON_API = isDev
+  ? 'http://localhost:8787'
+  : 'https://salon-api.shiminggu.workers.dev';
 
 export const salon: Record<string, SalonEntry[]> = {
   // 示例（去掉注释并修改即可上线一期阵容）：

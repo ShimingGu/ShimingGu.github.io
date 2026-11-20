@@ -376,45 +376,52 @@ const other = otherLang(lang);
       return;
     }
 
-    const payload = { id, lang: ilang };
-    if (who) payload.who = who;
-    if (minutes !== undefined) payload.minutes = minutes;
-    if (talk) payload.talk = talk;
-    if (food) payload.food = food;
+    submitBtn.disabled = true;
+    submitBtn.textContent = t.submitting;
+    try {
+      const payload = { id, lang: ilang };
+      if (who) payload.who = who;
+      if (minutes !== undefined) payload.minutes = minutes;
+      if (talk) payload.talk = talk;
+      if (food) payload.food = food;
 
-    if (live) {
-      try {
-        const r = await fetch(`${api}/salon/${month}`, {
-          method: mode === 'new' ? 'POST' : 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          signal: AbortSignal.timeout(30000),
-        });
-        const j = await r.json();
-        if (!r.ok) {
-          say(j.error && t[j.error] ? j.error : 'errGeneric', false);
+      if (live) {
+        try {
+          const r = await fetch(`${api}/salon/${month}`, {
+            method: mode === 'new' ? 'POST' : 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: AbortSignal.timeout(60000),
+          });
+          const j = await r.json();
+          if (!r.ok) {
+            say(j.error && t[j.error] ? j.error : 'errGeneric', false);
+            return;
+          }
+          if (mode === 'new') entries.push(j.entry);
+          else await refresh();
+          renderLineup();
+          updateBudget();
+          exportBox.hidden = true;
+          say(mode === 'new' ? 'okLive' : 'okEditLive', true);
           return;
+        } catch {
+          // network dropped mid-submit: fall back to export flow
         }
-        if (mode === 'new') entries.push(j.entry);
-        else await refresh();
-        renderLineup();
-        updateBudget();
-        exportBox.hidden = true;
-        say(mode === 'new' ? 'okLive' : 'okEditLive', true);
-        return;
-      } catch {
-        // network dropped mid-submit: fall back to export flow
       }
-    }
 
-    const entry = {
-      id,
-      who: who || '(edit)',
-      minutes: minutes ?? 20,
-      talk: { zh: ilang === 'zh' ? talk : '', en: ilang === 'en' ? talk : '' },
-      food: { zh: ilang === 'zh' ? food : '', en: ilang === 'en' ? food : '' },
-    };
-    offlineExport(entry);
+      const entry = {
+        id,
+        who: who || '(edit)',
+        minutes: minutes ?? 20,
+        talk: { zh: ilang === 'zh' ? talk : '', en: ilang === 'en' ? talk : '' },
+        food: { zh: ilang === 'zh' ? food : '', en: ilang === 'en' ? food : '' },
+      };
+      offlineExport(entry);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = mode === 'new' ? t.submitNew : t.submitEdit;
+    }
   });
 
   copyBtn.addEventListener('click', async () => {

@@ -89,6 +89,11 @@ npm run preview
 - **双语**：登记时选一种语言填写 talk/food，另一种由 Worker 即时翻译；显示时自动回退。
 - 填 `organizerEmail` 后离线回退表单出现"邮件发给组织者"按钮。
 - 部署 Worker：`cd workers/salon-api && npx wrangler deploy`（需 `wrangler login`）。
+- **本地预览直播**：开发环境前端指向 `http://localhost:8787`，需先起隧道：
+  `cd workers/salon-api && npx wrangler dev --remote --port 8787`（后台常驻；
+  停止用 `pkill -f "wrangler dev --remote"`）。隧道走 api.cloudflare.com，
+  不受 workers.dev 的 SNI 阻断影响，任何本地浏览器都能体验完整直播+翻译。
+  首次翻译有模型冷启动（约 10 秒），按钮会显示"提交中…"。
 
 ## 目录结构
 

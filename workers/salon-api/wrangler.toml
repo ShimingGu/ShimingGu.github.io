@@ -11,4 +11,4 @@ binding = "AI"
 
 [vars]
 ALLOWED_ORIGINS = "http://localhost:4321,http://127.0.0.1:4321,https://shiminggu.github.io"
-TRANSLATE_MODEL = "@cf/openai/gpt-oss-20b"
+TRANSLATE_MODEL = "@cf/qwen/qwen3.8-27b"

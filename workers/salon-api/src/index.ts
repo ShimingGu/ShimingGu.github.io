@@ -18,6 +18,24 @@ interface Env {
 }
 
 const MONTH_RE = /^\d{4}-\d{2}$/;
+const MAX_CHARS = 4000;
+const CHUNK_CHARS = 350;
+
+function degenerate(out: string): boolean {
+  const s = out.trim();
+  if (s.length < 2) return true;
+  const punct = (s.match(/[\s,.;:!?、，。；]/g) || []).length;
+  if (punct / s.length > 0.5) return true;
+  const words = s.split(/\s+/);
+  const counts = new Map<string, number>();
+  for (let i = 0; i + 3 <= words.length; i++) {
+    const g = words.slice(i, i + 3).join(' ');
+    const c = (counts.get(g) || 0) + 1;
+    counts.set(g, c);
+    if (c > 4) return true;
+  }
+  return false;
+}
 
 function corsHeaders(env: Env, origin: string | null): Record<string, string> {
   const allowed = env.ALLOWED_ORIGINS.split(',');
@@ -49,13 +67,13 @@ async function loadEntries(env: Env, month: string): Promise<StoredEntry[]> {
   return raw ? (JSON.parse(raw) as StoredEntry[]) : [];
 }
 
-async function translate(env: Env, text: string, from: 'zh' | 'en', to: 'zh' | 'en'): Promise<string> {
+async function translateOnce(env: Env, text: string, from: 'zh' | 'en', to: 'zh' | 'en'): Promise<string> {
   const fromName = from === 'zh' ? 'Chinese' : 'English';
   const toName = to === 'zh' ? 'Chinese' : 'English';
   const messages = [
     {
       role: 'system',
-      content: `Translate the following fragment from ${fromName} to ${toName} for an astronomy seminar sign-up board. Preserve the meaning exactly, keep technical terms standard, translate fragments as fragments (do not complete sentences or add words). Output only the translation.`,
+      content: `You translate sign-up board entries from ${fromName} to ${toName}. If the source is classical Chinese poetry, render its meaning in fluent English, keeping place and person names in standard pinyin or conventional English. If the source is a list of items, translate every item exactly once, separated by commas; never repeat items or phrases. Translate fragments as fragments; do not add words. Output only the translation.`,
     },
     { role: 'user', content: text },
   ];
@@ -63,10 +81,17 @@ async function translate(env: Env, text: string, from: 'zh' | 'en', to: 'zh' | '
     const o = r as { response?: string; choices?: { message?: { content?: string } }[] };
     return (o.response ?? o.choices?.[0]?.message?.content ?? '').trim();
   };
-  for (const model of [env.TRANSLATE_MODEL, '@cf/qwen/qwen3.8-27b']) {
+  const attempts: Array<[string, Record<string, unknown>]> = [
+    [
+      env.TRANSLATE_MODEL,
+      { max_tokens: 2048, temperature: 0.2, chat_template_kwargs: { enable_thinking: false } },
+    ],
+    ['@cf/openai/gpt-oss-120b', { max_tokens: 2048, reasoning_effort: 'low' }],
+  ];
+  for (const [model, extra] of attempts) {
     try {
-      const out = extract(await env.AI.run(model as keyof AiModels, { messages }));
-      if (out) return out;
+      const out = extract(await env.AI.run(model as keyof AiModels, { messages, ...extra }));
+      if (out && !degenerate(out)) return out;
     } catch {
       // try next model in the chain
     }
@@ -77,10 +102,35 @@ async function translate(env: Env, text: string, from: 'zh' | 'en', to: 'zh' | '
       source_lang: from,
       target_lang: to,
     })) as { translated_text?: string };
-    return r.translated_text?.trim() ?? '';
+    const out = r.translated_text?.trim() ?? '';
+    if (out && !degenerate(out)) return out;
   } catch {
-    return '';
+    // leave slot empty; signup still succeeds
   }
+  return '';
+}
+
+async function translate(env: Env, text: string, from: 'zh' | 'en', to: 'zh' | 'en'): Promise<string> {
+  if (text.length <= CHUNK_CHARS) return translateOnce(env, text, from, to);
+  const items = text.split(/(?<=[、，,;；])/);
+  const chunks: string[] = [];
+  let cur = '';
+  for (const it of items) {
+    if (cur && (cur + it).length > CHUNK_CHARS) {
+      chunks.push(cur);
+      cur = it;
+    } else {
+      cur += it;
+    }
+  }
+  if (cur) chunks.push(cur);
+  const parts: string[] = [];
+  for (const c of chunks.slice(0, 8)) {
+    parts.push(await translateOnce(env, c, from, to));
+  }
+  let out = parts.filter(Boolean).join(' ');
+  if (chunks.length > 8) out += ' …';
+  return out;
 }
 
 export default {
@@ -127,6 +177,9 @@ export default {
         const other = lang === 'zh' ? 'en' : 'zh';
         const talk = String(body.talk ?? '');
         const food = String(body.food ?? '');
+        if (talk.length > MAX_CHARS || food.length > MAX_CHARS) {
+          return json(env, origin, { error: 'errTooLong' }, 400);
+        }
 
         const entries = await loadEntries(env, month);
         const idHash = await hashId(id);
@@ -183,11 +236,24 @@ export default {
       }
     }
 
+    if (parts[0] === 'admin' && parts[1] === 'translate' && request.method === 'POST') {
+      if (!env.ADMIN_KEY || request.headers.get('X-Admin-Key') !== env.ADMIN_KEY) {
+        return json(env, origin, { error: 'errAdmin' }, 403);
+      }
+      const body = (await request.json()) as { text: string; from: 'zh' | 'en'; to: 'zh' | 'en' };
+      const translation = await translate(env, String(body.text ?? ''), body.from, body.to);
+      return json(env, origin, { translation });
+    }
+
     if (parts[0] === 'admin' && MONTH_RE.test(parts[1] ?? '')) {
       if (!env.ADMIN_KEY || request.headers.get('X-Admin-Key') !== env.ADMIN_KEY) {
         return json(env, origin, { error: 'errAdmin' }, 403);
       }
       const month = parts[1];
+      if (request.method === 'GET') {
+        const entries = await loadEntries(env, month);
+        return json(env, origin, { entries });
+      }
       const body = (await request.json()) as {
         action: 'patch' | 'delete';
         idHash: string;

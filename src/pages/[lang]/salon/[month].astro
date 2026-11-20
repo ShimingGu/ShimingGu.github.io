@@ -132,7 +132,7 @@ const other = otherLang(lang);
           </div>
           <div class="field">
             <label for="sf-talk">{t.talkLabel}</label>
-            <input id="sf-talk" autocomplete="off" />
+            <input id="sf-talk" maxlength="2000" autocomplete="off" />
           </div>
           <div class="form-row">
             <div class="field" style="width: 170px; margin: 0;">
@@ -143,7 +143,7 @@ const other = otherLang(lang);
           </div>
           <div class="field">
             <label for="sf-food">{t.foodLabel}</label>
-            <input id="sf-food" autocomplete="off" />
+            <input id="sf-food" maxlength="2000" autocomplete="off" />
           </div>
           <button type="button" class="btn-salon" id="sf-submit">
             {t.submitNew}

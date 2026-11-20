@@ -20,10 +20,10 @@ export interface Photo {
 
 export const photos: Photo[] = [
   {
-    src: '/photos/van-cottontail.jpg',
-    full: '/photos/full/van-cottontail.jpg',
-    alt: { en: 'A cottontail rabbit sitting alert on green grass', zh: '绿草地上警觉坐定的棉尾兔' },
-    caption: { en: 'A cottontail freezes on the lawn.', zh: '草坪上定住的棉尾兔。' },
+    src: '/photos/van-gull-fight.jpg',
+    full: '/photos/full/van-gull-fight.jpg',
+    alt: { en: 'Two gulls confronting on rocks, one lunging with spread wings', zh: '礁石上对峙的两只海鸥，一只张翅扑上前' },
+    caption: { en: 'Two gulls settle it on the rocks.', zh: '两只海鸥在礁石上解决争端。' },
   },
   {
     src: '/photos/van-maple-street.jpg',
@@ -33,10 +33,10 @@ export const photos: Photo[] = [
     caption: { en: 'Red maples, sunstar, one street.', zh: '红枫、星芒、一条街。' },
   },
   {
-    src: '/photos/van-orange-row.jpg',
-    full: '/photos/full/van-orange-row.jpg',
-    alt: { en: 'A straight row of orange autumn trees along a quiet street', zh: '安静街道旁一排笔直的橙色秋树' },
-    caption: { en: 'An orange colonnade into autumn.', zh: '一排橙色树廊走进秋天。' },
+    src: '/photos/van-blossom-sunstar.jpg',
+    full: '/photos/full/van-blossom-sunstar.jpg',
+    alt: { en: 'A sunstar shining through pink cherry blossoms', zh: '粉色樱花冠里透出的太阳星芒' },
+    caption: { en: 'Sunstar through the cherry canopy.', zh: '樱花冠里透出的星芒。' },
   },
   {
     src: '/photos/van-tulips.jpg',
@@ -45,17 +45,11 @@ export const photos: Photo[] = [
     caption: { en: 'Tulips over muscari.', zh: '郁金香与葡萄风信子。' },
   },
   {
-    src: '/photos/van-eagle.jpg',
-    full: '/photos/full/van-eagle.jpg',
-    alt: { en: 'An eagle soaring against a clear blue sky', zh: '纯蓝天空中翱翔的鹰' },
-    caption: { en: 'An eagle crosses the blue.', zh: '鹰掠过纯蓝。' },
-  },
-  {
-    src: '/photos/van-fireworks.jpg',
-    full: '/photos/full/van-fireworks.jpg',
+    src: '/photos/van-fireworks-purple.jpg',
+    full: '/photos/full/van-fireworks-purple.jpg',
     hdr: true,
-    alt: { en: 'Two firework bursts, orange and gold, over a dark bay', zh: '暗色海湾上空橙金双焰' },
-    caption: { en: 'Two bursts over the bay.', zh: '海湾上空的双焰。' },
+    alt: { en: 'Purple firework bursts doubled in the bay with boat silhouettes', zh: '紫色烟花在海湾倒影里折成双份，船影点缀' },
+    caption: { en: 'Purple bursts, doubled in the bay.', zh: '紫焰在海湾里折成双份。' },
   },
   {
     src: '/photos/yel-mist-tetons.jpg',
@@ -83,11 +77,10 @@ export const photos: Photo[] = [
     caption: { en: 'The Milky Way over a golden field.', zh: '金色草甸上的银河。' },
   },
   {
-    src: '/photos/yel-bison-jam.jpg',
-    full: '/photos/full/yel-bison-jam.jpg',
-    hdr: true,
-    alt: { en: 'A bison walking down the road between stopped cars', zh: '野牛在停摆的车流之间沿公路走来' },
-    caption: { en: 'Bison jam: the road belongs to them.', zh: '野牛堵路：路权归它们。' },
+    src: '/photos/yel-bison-herd.jpg',
+    full: '/photos/full/yel-bison-herd.jpg',
+    alt: { en: 'A bison herd along a steaming river', zh: '冒着蒸汽的河边的野牛群' },
+    caption: { en: 'The herd drinks where the river steams.', zh: '河面冒着蒸汽，野牛群来饮水。' },
   },
   {
     src: '/photos/yel-bison-sparring.jpg',
@@ -95,6 +88,12 @@ export const photos: Photo[] = [
     hdr: true,
     alt: { en: 'Two bison locking horns in a grassy field', zh: '草地上顶角相持的两头野牛' },
     caption: { en: 'Two bison lock horns.', zh: '两头野牛顶角相持。' },
+  },
+  {
+    src: '/photos/yel-chipmunk.jpg',
+    full: '/photos/full/yel-chipmunk.jpg',
+    alt: { en: 'A chipmunk on a log with a mouthful of seeds, green bokeh behind', zh: '倒木上塞了一嘴种子的花栗鼠，背后绿色虚化' },
+    caption: { en: 'A chipmunk with a mouthful of seeds.', zh: '塞了一嘴种子的花栗鼠。' },
   },
   {
     src: '/photos/yel-prismatic.jpg',

@@ -279,16 +279,30 @@ main.salon-main {
   bottom: 0;
   width: 2px;
   background: rgba(43, 38, 32, 0.45);
+  transform: translateX(-50%);
 }
 
 .budget-scale {
-  display: flex;
-  justify-content: space-between;
+  position: relative;
+  height: 1.4em;
   font-family: var(--font-body);
   font-size: 0.72rem;
   font-weight: 500;
   color: #7d7466;
   margin-top: 0.3rem;
+}
+
+.budget-scale span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.budget-scale span:first-child {
+  transform: none;
+}
+
+.budget-scale span:last-child {
+  transform: none;
 }
 
 .rules {

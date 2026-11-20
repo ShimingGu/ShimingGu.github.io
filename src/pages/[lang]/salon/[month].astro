@@ -66,9 +66,11 @@ const other = otherLang(lang);
       <div class="budget-mark" style={`left: ${(SALON_RULES.totalMin / SALON_RULES.totalMax) * 100}%`}></div>
     </div>
     <div class="budget-scale">
-      <span>0</span>
-      <span>{SALON_RULES.totalMin}</span>
-      <span>{SALON_RULES.totalMax} {t.minUnit}</span>
+      <span style="left: 0;">0</span>
+      <span style={`left: ${(SALON_RULES.totalMin / SALON_RULES.totalMax) * 100}%`}>
+        {SALON_RULES.totalMin}
+      </span>
+      <span style="right: 0;">{SALON_RULES.totalMax} {t.minUnit}</span>
     </div>
     <p class="live-status" id="live-status"></p>
     <p class="rules">{t.rules}</p>

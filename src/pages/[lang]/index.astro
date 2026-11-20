@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PubItem from '../../components/PubItem.astro';
+import CosmicWeb from '../../components/CosmicWeb.astro';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { profile } from '../../data/profile';
 import { publications } from '../../data/publications';
@@ -47,23 +48,7 @@ const hasAffiliation = profile.affiliation[lang] !== '';
         </a>
       </div>
     </div>
-    <svg class="hero-orbit" viewBox="0 0 200 200" aria-hidden="true">
-      <defs>
-        <radialGradient id="coreGrad">
-          <stop offset="0%" stop-color="#1d1d1f"></stop>
-          <stop offset="100%" stop-color="#86868b"></stop>
-        </radialGradient>
-      </defs>
-      <g class="orbit-ring">
-        <ellipse cx="100" cy="100" rx="88" ry="34" fill="none" stroke="rgba(29,29,31,.28)" stroke-width="1"></ellipse>
-        <circle cx="188" cy="100" r="4" fill="#1d1d1f"></circle>
-      </g>
-      <g class="orbit-ring orbit-ring-2">
-        <ellipse cx="100" cy="100" rx="60" ry="60" fill="none" stroke="rgba(29,29,31,.18)" stroke-width="1" stroke-dasharray="3 5"></ellipse>
-        <circle cx="100" cy="40" r="3" fill="#86868b"></circle>
-      </g>
-      <circle cx="100" cy="100" r="14" fill="url(#coreGrad)"></circle>
-    </svg>
+    <CosmicWeb />
   </section>
 
   <section class="container section" id="about">
@@ -73,7 +58,7 @@ const hasAffiliation = profile.affiliation[lang] !== '';
     </div>
     <div class="grid grid-2">
       <div>
-        <p>{profile.bio[lang]}</p>
+        {profile.bio[lang].split('\n\n').map((para) => <p>{para}</p>)}
         <h3 style="font-size: 0.95rem; margin-top: 1.5rem;">{t('home.interests')}</h3>
         <div class="chips">
           {profile.interests.map((i) => <span class="chip">{i[lang]}</span>)}

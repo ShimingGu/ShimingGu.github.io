@@ -1,0 +1,194 @@
+---
+---
+
+<canvas id="cosmic-web" class="hero-web" aria-hidden="true"></canvas>
+
+<script>
+  const canvas = document.getElementById('cosmic-web') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  interface WebNode {
+    bx: number; by: number; x: number; y: number;
+    r: number; ph: number; sp: number; amp: number; deg: number;
+  }
+  interface WebEdge {
+    i: number; j: number; bend: number;
+  }
+  interface Pulse {
+    e: number; t: number; v: number;
+  }
+
+  let nodes: WebNode[] = [];
+  let edges: WebEdge[] = [];
+  let pulses: Pulse[] = [];
+  let w = 0;
+  let h = 0;
+  let R = 0;
+
+  const mk = (x: number, y: number, r: number): WebNode => ({
+    bx: x, by: y, x, y, r,
+    ph: Math.random() * Math.PI * 2,
+    sp: 0.15 + Math.random() * 0.25,
+    amp: 1.5 + Math.random() * 2.5,
+    deg: 0,
+  });
+
+  function build() {
+    const rect = canvas.getBoundingClientRect();
+    w = rect.width;
+    h = rect.height;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    R = 0.24 * Math.min(w, h);
+
+    const centers = Array.from({ length: 5 }, () => ({
+      x: (0.15 + 0.7 * Math.random()) * w,
+      y: (0.15 + 0.7 * Math.random()) * h,
+    }));
+    nodes = [];
+    for (const c of centers) {
+      const n = 6 + Math.floor(Math.random() * 5);
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const d = Math.random() * Math.min(w, h) * 0.13;
+        nodes.push(mk(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d, 1 + Math.random() * 2));
+      }
+    }
+    for (let i = 0; i < centers.length; i++) {
+      for (let j = i + 1; j < centers.length; j++) {
+        const a = centers[i];
+        const b = centers[j];
+        if (Math.hypot(a.x - b.x, a.y - b.y) < 0.6 * Math.min(w, h)) {
+          const steps = 4 + Math.floor(Math.random() * 3);
+          for (let k = 1; k < steps; k++) {
+            const t = k / steps;
+            nodes.push(
+              mk(
+                a.x + (b.x - a.x) * t + (Math.random() - 0.5) * R * 0.35,
+                a.y + (b.y - a.y) * t + (Math.random() - 0.5) * R * 0.35,
+                0.8 + Math.random() * 1.4,
+              ),
+            );
+          }
+        }
+      }
+    }
+    for (let i = 0; i < 8; i++) {
+      nodes.push(mk(Math.random() * w, Math.random() * h, 0.7 + Math.random()));
+    }
+
+    edges = [];
+    nodes.forEach((n, i) => {
+      const near = nodes
+        .map((m, j) => ({ j, d: Math.hypot(m.bx - n.bx, m.by - n.by) }))
+        .filter((o) => o.j !== i && o.d < R)
+        .sort((a, b) => a.d - b.d)
+        .slice(0, 3);
+      for (const { j } of near) {
+        if (!edges.some((e) => (e.i === i && e.j === j) || (e.i === j && e.j === i))) {
+          edges.push({ i, j, bend: (Math.random() - 0.5) * 0.35 });
+          nodes[i].deg++;
+          nodes[j].deg++;
+        }
+      }
+    });
+    pulses = edges
+      .map((_, e) => ({ e, t: Math.random(), v: 0.00005 + Math.random() * 0.00009 }))
+      .filter(() => Math.random() < 0.14);
+  }
+
+  const edgePoint = (e: WebEdge, t: number) => {
+    const a = nodes[e.i];
+    const b = nodes[e.j];
+    const mx = (a.x + b.x) / 2;
+    const my = (a.y + b.y) / 2;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const cx = mx - dy * e.bend;
+    const cy = my + dx * e.bend;
+    const u = 1 - t;
+    return {
+      x: u * u * a.x + 2 * u * t * cx + t * t * b.x,
+      y: u * u * a.y + 2 * u * t * cy + t * t * b.y,
+    };
+  };
+
+  function draw(t: number) {
+    ctx.clearRect(0, 0, w, h);
+    for (const e of edges) {
+      const a = nodes[e.i];
+      const b = nodes[e.j];
+      const d = Math.hypot(b.x - a.x, b.y - a.y);
+      const alpha = 0.06 + 0.22 * Math.max(0, 1 - d / R);
+      ctx.strokeStyle = `rgba(29,29,31,${alpha})`;
+      ctx.lineWidth = 0.8;
+      const p = edgePoint(e, 0.5);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.quadraticCurveTo(p.x * 2 - (a.x + b.x) / 2, p.y * 2 - (a.y + b.y) / 2, b.x, b.y);
+      ctx.stroke();
+    }
+    for (const p of pulses) {
+      const pos = edgePoint(edges[p.e], p.t);
+      ctx.fillStyle = 'rgba(29,29,31,0.45)';
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    for (const n of nodes) {
+      if (n.deg >= 4) {
+        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 6);
+        g.addColorStop(0, 'rgba(29,29,31,0.14)');
+        g.addColorStop(1, 'rgba(29,29,31,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r * 6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      const r = n.r * (1 + 0.12 * Math.sin(t / 1000 * 1.3 + n.ph));
+      ctx.fillStyle = 'rgba(29,29,31,0.75)';
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  let last = 0;
+  function loop(t: number) {
+    if (!document.hidden) {
+      const dt = last ? t - last : 16;
+      last = t;
+      for (const n of nodes) {
+        n.x = n.bx + Math.sin((t / 1000) * n.sp + n.ph) * n.amp;
+        n.y = n.by + Math.cos((t / 1000) * n.sp * 0.8 + n.ph) * n.amp;
+      }
+      for (const p of pulses) {
+        p.t += p.v * dt;
+        if (p.t > 1) {
+          p.t = 0;
+          p.e = Math.floor(Math.random() * edges.length);
+        }
+      }
+      draw(t);
+    }
+    requestAnimationFrame(loop);
+  }
+
+  build();
+  if (reduced) {
+    draw(0);
+  } else {
+    requestAnimationFrame(loop);
+  }
+  let rt = 0;
+  addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = window.setTimeout(() => {
+      build();
+      if (reduced) draw(0);
+    }, 150);
+  });
+</script>

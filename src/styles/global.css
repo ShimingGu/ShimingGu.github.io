@@ -359,26 +359,10 @@ main {
   gap: 0.85rem;
 }
 
-.hero-orbit {
-  width: clamp(160px, 24vw, 260px);
+.hero-web {
+  width: clamp(200px, 26vw, 320px);
+  aspect-ratio: 1;
   height: auto;
-  opacity: 0.85;
-}
-
-.orbit-ring {
-  transform-origin: center;
-  animation: orbit-spin 60s linear infinite;
-}
-
-.orbit-ring-2 {
-  animation-duration: 90s;
-  animation-direction: reverse;
-}
-
-@keyframes orbit-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @media (max-width: 760px) {
@@ -386,7 +370,7 @@ main {
     grid-template-columns: 1fr;
   }
 
-  .hero-orbit {
+  .hero-web {
     display: none;
   }
 }

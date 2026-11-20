@@ -51,16 +51,16 @@ const hasAffiliation = profile.affiliation[lang] !== '';
       <defs>
         <radialGradient id="coreGrad">
           <stop offset="0%" stop-color="#1d1d1f"></stop>
-          <stop offset="100%" stop-color="#6e56cf"></stop>
+          <stop offset="100%" stop-color="#86868b"></stop>
         </radialGradient>
       </defs>
       <g class="orbit-ring">
-        <ellipse cx="100" cy="100" rx="88" ry="34" fill="none" stroke="rgba(0,113,227,.35)" stroke-width="1"></ellipse>
-        <circle cx="188" cy="100" r="4" fill="#0071e3"></circle>
+        <ellipse cx="100" cy="100" rx="88" ry="34" fill="none" stroke="rgba(29,29,31,.28)" stroke-width="1"></ellipse>
+        <circle cx="188" cy="100" r="4" fill="#1d1d1f"></circle>
       </g>
       <g class="orbit-ring orbit-ring-2">
-        <ellipse cx="100" cy="100" rx="60" ry="60" fill="none" stroke="rgba(110,86,207,.35)" stroke-width="1" stroke-dasharray="3 5"></ellipse>
-        <circle cx="100" cy="40" r="3" fill="#6e56cf"></circle>
+        <ellipse cx="100" cy="100" rx="60" ry="60" fill="none" stroke="rgba(29,29,31,.18)" stroke-width="1" stroke-dasharray="3 5"></ellipse>
+        <circle cx="100" cy="40" r="3" fill="#86868b"></circle>
       </g>
       <circle cx="100" cy="100" r="14" fill="url(#coreGrad)"></circle>
     </svg>
@@ -182,27 +182,24 @@ const hasAffiliation = profile.affiliation[lang] !== '';
       <p class="kicker">Explore</p>
       <h2 class="section-title">{t('home.explore')}</h2>
     </div>
-    <div class="grid grid-3">
-      <a class="card-link" href={researchUrl}>
-        <article class="card">
-          <h3>{t('home.explore.research')}</h3>
-          <p>{t('home.explore.researchDesc')}</p>
-          <span class="card-arrow">→</span>
-        </article>
+    <div class="tile-grid">
+      <a class="tile tile-research tile-wide" href={researchUrl}>
+        <p class="tile-eyebrow">{t('nav.research')}</p>
+        <h3>{t('home.explore.research')}</h3>
+        <p class="tile-sub">{t('home.explore.researchDesc')}</p>
+        <span class="tile-cta">{t('home.tile.more')} ›</span>
       </a>
-      <a class="card-link" href={photographyUrl}>
-        <article class="card">
-          <h3>{t('home.explore.photography')}</h3>
-          <p>{t('home.explore.photographyDesc')}</p>
-          <span class="card-arrow">→</span>
-        </article>
+      <a class="tile tile-photo" href={photographyUrl}>
+        <p class="tile-eyebrow">{t('nav.photography')}</p>
+        <h3>{t('home.explore.photography')}</h3>
+        <p class="tile-sub">{t('home.explore.photographyDesc')}</p>
+        <span class="tile-cta">{t('home.tile.more')} ›</span>
       </a>
-      <a class="card-link" href={widgetsUrl}>
-        <article class="card">
-          <h3>{t('home.explore.widgets')}</h3>
-          <p>{t('home.explore.widgetsDesc')}</p>
-          <span class="card-arrow">→</span>
-        </article>
+      <a class="tile tile-widgets" href={widgetsUrl}>
+        <p class="tile-eyebrow">{t('nav.widgets')}</p>
+        <h3>{t('home.explore.widgets')}</h3>
+        <p class="tile-sub">{t('home.explore.widgetsDesc')}</p>
+        <span class="tile-cta">{t('home.tile.more')} ›</span>
       </a>
     </div>
   </section>

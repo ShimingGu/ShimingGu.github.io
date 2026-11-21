@@ -77,6 +77,8 @@ npm run preview
   规则校验在服务端（复用 `src/lib/salon.ts`），identifier 只以 SHA-256 哈希存储。
 - **规则**：每人 ≥10 分钟；全场 20–60 分钟；第一位讲者 ≥20 分钟，
   之后有人加入可下调自己的时间；identifier 全场唯一（大小写不敏感）。
+  管理员作弊码：identifier 为 `JiovanniPietroG` 时豁免分钟下限（可填 0），
+  上限/整数/重名校验照旧（服务端权威判定）。
 - **即时翻译**：Worker 调 Workers AI（主 `@cf/openai/gpt-oss-20b`，
   兜底 `@cf/qwen/qwen3.8-27b` → `m2m100-1.2b`），免费额度内；失败留空槽不挡报名。
 - **离线回退**：Worker 不可达时页面降级为仓库快照 + 导出报名文本流程

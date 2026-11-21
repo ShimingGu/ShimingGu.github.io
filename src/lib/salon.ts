@@ -1,5 +1,10 @@
 import { SALON_RULES } from '../data/salon';
 
+// 管理员作弊码：该 identifier 豁免分钟下限（可填 0），上限与整数校验照旧
+export const ADMIN_ID = 'JiovanniPietroG';
+export const isAdminId = (id: string): boolean =>
+  id.trim().toLowerCase() === ADMIN_ID.toLowerCase();
+
 // 客户端只拿哈希后的 identifier，避免修改凭证泄露进页面源码
 export interface ClientEntry {
   idHash: string;
@@ -42,26 +47,39 @@ export function checkFields(
   if (!who.trim()) return 'errWhoEmpty';
   if (who.trim().length > 40) return 'errWhoLong';
   if (!Number.isInteger(minutes)) return 'errMinutesInt';
+  if (minutes < 0) return 'errNegative';
   if (!talk.trim()) return 'errTalkEmpty';
   if (!food.trim()) return 'errFoodEmpty';
   return null;
 }
 
-export function checkNew(entries: ClientEntry[], idHash: string, minutes: number): string | null {
+export function checkNew(
+  entries: ClientEntry[],
+  idHash: string,
+  minutes: number,
+  plainId = '',
+): string | null {
   if (entries.some((e) => e.idHash === idHash)) return 'errIdDup';
-  if (minutes < SALON_RULES.perMin) return 'errPerMin';
+  const admin = isAdminId(plainId);
+  if (!admin && minutes < SALON_RULES.perMin) return 'errPerMin';
   const total = totalMinutes(entries);
-  if (total === 0 && minutes < SALON_RULES.totalMin) return 'errFirstMin';
+  if (!admin && total === 0 && minutes < SALON_RULES.totalMin) return 'errFirstMin';
   if (total + minutes > SALON_RULES.totalMax) return 'errTotalMax';
   return null;
 }
 
-export function checkEdit(entries: ClientEntry[], idHash: string, minutes: number): string | null {
+export function checkEdit(
+  entries: ClientEntry[],
+  idHash: string,
+  minutes: number,
+  plainId = '',
+): string | null {
   const current = entries.find((e) => e.idHash === idHash);
   if (!current) return 'errIdUnknown';
-  if (minutes < SALON_RULES.perMin) return 'errPerMin';
+  const admin = isAdminId(plainId);
+  if (!admin && minutes < SALON_RULES.perMin) return 'errPerMin';
   const total = totalMinutes(entries) - current.minutes + minutes;
-  if (total < SALON_RULES.totalMin) return 'errTotalMin';
+  if (!admin && total < SALON_RULES.totalMin) return 'errTotalMin';
   if (total > SALON_RULES.totalMax) return 'errTotalMax';
   return null;
 }

@@ -141,7 +141,7 @@ const other = otherLang(lang);
           <div class="form-row">
             <div class="field" style="width: 170px; margin: 0;">
               <label for="sf-min">{t.minutesLabel}</label>
-              <input id="sf-min" type="number" min="10" max="60" step="5" value="20" />
+              <input id="sf-min" type="number" min="0" max="60" step="5" value="20" />
             </div>
             <span class="will-total" id="sf-will"></span>
           </div>
@@ -178,7 +178,7 @@ const other = otherLang(lang);
 </SalonBase>
 
 <script>
-  import { checkFields, checkNew, exportText, totalMinutes } from '../../../lib/salon';
+  import { checkFields, checkNew, exportText, totalMinutes, isAdminId } from '../../../lib/salon';
   import { salonUi } from '../../../i18n/salon';
 
   const { month, entries: snapshot, organizerEmail, api } = JSON.parse(
@@ -299,6 +299,7 @@ const other = otherLang(lang);
       entries.map((e) => ({ ...e, idHash: '' })),
       '__offline_no_dup_check__',
       entry.minutes,
+      id,
     );
     if (mode === 'new' && err) {
       say(err, false);
@@ -375,8 +376,11 @@ const other = otherLang(lang);
         say(fieldErr, false);
         return;
       }
-    } else if (minutes !== undefined && (!Number.isInteger(minutes) || minutes < 10)) {
-      say(!Number.isInteger(minutes) ? 'errMinutesInt' : 'errPerMin', false);
+    } else if (
+      minutes !== undefined &&
+      (!Number.isInteger(minutes) || minutes < 0 || (minutes < 10 && !isAdminId(id)))
+    ) {
+      say(!Number.isInteger(minutes) ? 'errMinutesInt' : minutes < 0 ? 'errNegative' : 'errPerMin', false);
       return;
     }
 

@@ -60,6 +60,7 @@ export const salonUi = {
     errWhoLong: '"Who I am" is too long (max 40 characters).',
     errIdUnknown: 'No entry found for that identifier.',
     errMinutesInt: 'Minutes must be a whole number.',
+    errNegative: 'Minutes cannot be negative.',
     errPerMin: 'At least 10 minutes per speaker.',
     errFirstMin:
       'The first speaker must sign up for at least 20 minutes (it can be lowered later once others join).',
@@ -128,6 +129,7 @@ export const salonUi = {
     errWhoLong: '“我是谁”太长（最多 40 字符）。',
     errIdUnknown: '找不到这个 identifier 的登记。',
     errMinutesInt: '分钟数必须是整数。',
+    errNegative: '分钟数不能为负。',
     errPerMin: '每人至少 10 分钟。',
     errFirstMin: '第一位讲者至少登记 20 分钟（之后有人加入可以再往下改）。',
     errTotalMax: '加上你就超过 60 分钟上限了。',

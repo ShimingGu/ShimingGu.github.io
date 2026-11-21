@@ -187,7 +187,7 @@ export default {
         if (request.method === 'POST') {
           const fieldErr = checkFields(id, who, minutes, talk, food);
           if (fieldErr) return json(env, origin, { error: fieldErr }, 400);
-          const ruleErr = checkNew(entries, idHash, minutes);
+          const ruleErr = checkNew(entries, idHash, minutes, id);
           if (ruleErr) return json(env, origin, { error: ruleErr }, 409);
           const [talkOther, foodOther] = await Promise.all([
             translate(env, talk, lang, other),
@@ -215,7 +215,7 @@ export default {
         const nextFood = body.food === undefined ? current.food[lang] : String(body.food);
         const fieldErr = checkFields(id, nextWho, nextMinutes, nextTalk, nextFood);
         if (fieldErr) return json(env, origin, { error: fieldErr }, 400);
-        const ruleErr = checkEdit(entries, idHash, nextMinutes);
+        const ruleErr = checkEdit(entries, idHash, nextMinutes, id);
         if (ruleErr) return json(env, origin, { error: ruleErr }, 409);
         const talkChanged = nextTalk.trim() !== current.talk[lang];
         const foodChanged = nextFood.trim() !== current.food[lang];

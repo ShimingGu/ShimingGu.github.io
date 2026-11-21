@@ -273,4 +273,30 @@ export const photos: Photo[] = [
     alt: { en: 'The Empress hotel facade with a Canadian flag above', zh: '旗帜之下的帝后酒店立面' },
     caption: { en: 'The Empress under a flag.', zh: '旗帜下的帝后酒店。' },
   },
+  {
+    src: '/photos/paris-eiffel-autumn.jpg',
+    full: '/photos/full/paris-eiffel-autumn.jpg',
+    alt: { en: 'The Eiffel Tower seen through red autumn leaves', zh: '红色秋叶间隙里的埃菲尔铁塔' },
+    caption: { en: 'The Eiffel Tower through October leaves.', zh: '十月红叶里的埃菲尔铁塔。' },
+  },
+  {
+    src: '/photos/paris-pyramid-night.jpg',
+    full: '/photos/full/paris-pyramid-night.jpg',
+    hdr: true,
+    alt: { en: 'The Louvre pyramid glowing symmetrically at night', zh: '夜色里对称发光的卢浮宫玻璃金字塔' },
+    caption: { en: 'The pyramid holds the night symmetric.', zh: '夜色里对称的玻璃金字塔。' },
+  },
+  {
+    src: '/photos/paris-gilded-gallery.jpg',
+    full: '/photos/full/paris-gilded-gallery.jpg',
+    hdr: true,
+    alt: { en: 'A gilded palace gallery corridor with columns and a hanging lantern', zh: '镀金宫殿长廊，列柱与吊灯' },
+    caption: { en: 'A gilded gallery walks into gold.', zh: '镀金长廊走进金色里。' },
+  },
+  {
+    src: '/photos/paris-golden-statue.jpg',
+    full: '/photos/full/paris-golden-statue.jpg',
+    alt: { en: 'A gilded quadriga statue and French flag above the Grand Palais', zh: '大皇宫顶上的金色四马战车与法国国旗' },
+    caption: { en: 'Gold quadriga over the Grand Palais.', zh: '大皇宫顶上的金色四马战车。' },
+  },
 ];

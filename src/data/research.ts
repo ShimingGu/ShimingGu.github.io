@@ -30,8 +30,8 @@ export const topics: Topic[] = [
       zh: '宇宙大尺度结构',
     },
     summary: {
-      en: 'Gravity draws galaxies into a vast "cosmic web" of clusters, filaments and voids. How clumpy this web is, and how its clumps grow over cosmic time, records what the Universe is made of — from dark matter to dark energy. I use the subtle bending of light by gravity as a scale to count and weigh these structures, and study how to read that scale reliably.',
-      zh: '引力把星系聚成一张由星系团、纤维结构和空洞组成的巨大"宇宙网"。这张网有多结块、结块如何随宇宙时间长大，记录了宇宙由什么构成——从暗物质到暗能量。我把引力对光线的微弱弯折当作一杆秤，去数清、称准这些结构，并研究如何可靠地读数。',
+      en: 'Gravity draws galaxies into a vast "cosmic web" of clusters, filaments and voids. How clumpy this web is, and how its clumps grow over cosmic time, records what the Universe is made of — from dark matter to dark energy. The subtle bending of light by gravity serves as a scale to count and weigh these structures; reading that scale reliably is the challenge.',
+      zh: '引力把星系聚成一张由星系团、纤维结构和空洞组成的巨大"宇宙网"。这张网有多结块、结块如何随宇宙时间长大，记录了宇宙由什么构成——从暗物质到暗能量。引力对光线的微弱弯折可以当作一杆秤，去数清、称准这些结构；而如何可靠地读数，正是问题所在。',
     },
     technical: {
       en: 'Weak lensing maps the dark-matter scaffolding of the Universe, but precision cosmology needs more than maps: it needs observables whose theory is under control. The deepest tension is that the most informative scales are also the most nonlinear, where predictions rely on expensive simulations. The conceptual move behind the BNT transform is to recombine the data so that the poorly understood nonlinear part cancels by construction, leaving a signal that perturbation theory can predict — a route to cosmology from lensing that is clean by design rather than calibrated by brute force.',
@@ -60,8 +60,8 @@ export const topics: Topic[] = [
       zh: '巡天系统误差诊断',
     },
     summary: {
-      en: 'Sky surveys photograph billions of galaxies, and tiny distortions in those images carry cosmological information. But instruments, the atmosphere and the galaxies themselves leave fingerprints that can mimic or hide the signal. I build the survey\'s "health check": diagnostics that separate genuine cosmic signals from contaminants before we trust the cosmology.',
-      zh: '巡天给数十亿星系拍照，图像里极微小的形变携带着宇宙学信息。但仪器、大气和星系自身也会留下指纹，可能模仿或掩盖真实信号。我做的是巡天的"体检"：在相信宇宙学结论之前，用诊断工具把真正的宇宙信号与污染分开。',
+      en: 'Sky surveys photograph billions of galaxies, and tiny distortions in those images carry cosmological information. But instruments, the atmosphere and the galaxies themselves leave fingerprints that can mimic or hide the signal. So before we trust the cosmological conclusions, we need diagnostic tools that separate genuine cosmic signals from contamination.',
+      zh: '巡天给数十亿星系拍照，图像里极微小的形变携带着宇宙学信息。但仪器、大气和星系自身也会留下指纹，可能模仿或掩盖真实信号。于是在我们相信宇宙学结论之前，我们需要通过诊断工具把真正的宇宙信号与污染分开。',
     },
     technical: {
       en: 'Every cosmological claim from a survey rests on an assumption: that the measured distortions trace the sky, not the instrument. As surveys reach percent-level precision, systematics — not statistics — become the limiting factor, and they cannot all be modelled from first principles. The guiding idea is internal consistency: the same sky observed in independent ways must tell one story, so contradictions within the data become a detector for unknown systematics. Cosmology then rests on checks the data performs on itself.',
@@ -78,12 +78,12 @@ export const topics: Topic[] = [
   {
     id: 'fm',
     title: {
-      en: 'Foundation models & post-training',
-      zh: '基础模型与后训练',
+      en: 'Foundation models',
+      zh: '基础模型',
     },
     summary: {
-      en: 'The recipe behind large language models — pretrain on enormous data, then adapt with a little targeted training — is arriving in astronomy. I teach general-purpose foundation models to read survey catalogues and images, then specialise them with small labelled datasets (post-training). The current testbed is guessing galaxy distances from their colours; the goal is a reusable AI backbone for many survey tasks. No papers yet — this is where most of my time goes.',
-      zh: '大语言模型背后的配方——先在海量数据上预训练、再用少量针对性训练适配——正在进入天文。我教通用基础模型读巡天星表和图像，再用小规模带标签数据做后训练。目前的试验场是从星系颜色猜距离（光度红移），目标是可复用于多种巡天任务的 AI 底座。还没有论文——但这是我目前时间投入最多的方向。',
+      en: 'The recipe behind large language models — pretrain on enormous data, then adapt with a little targeted training — is arriving in astronomy. Through targeted training, general-purpose foundation models can learn to read survey catalogues and images starting from physical intuition, and reason toward astronomical applications.',
+      zh: '大语言模型背后的配方——先在海量数据上预训练、再用少量针对性训练适配——这一工作方式正在进入天文。通过针对性训练，可以使得通用基础模型能够从物理直觉出发去阅读巡天星表和图像，以进行以天文应用目的的推理。',
     },
     technical: {
       en: 'Astronomy now produces far more data than labelled examples: every new survey or task traditionally demands its own pipeline and its own expensive training set. The foundation-model question is whether a single pretrained representation of catalogues and images can serve as shared infrastructure, with small adaptations per task — the pattern that transformed language and vision. Photometric redshifts are a decisive test case, being indispensable, label-hungry and bound by physical law; the open question is whether physics can be built into the adaptation so that the model\'s uncertainties remain trustworthy.',

@@ -19,7 +19,7 @@ export interface Topic {
   technical?: Localized;
   tags: string[];
   papers?: TopicRef[];
-  reading?: TopicRef[];
+  papersLabel?: Localized;
 }
 
 export const topics: Topic[] = [
@@ -98,21 +98,20 @@ export const topics: Topic[] = [
       zh: '量子信息的天文应用',
     },
     summary: {
-      en: 'Telescope arrays act as one giant instrument by combining starlight — but at optical wavelengths, piping photons between telescopes loses almost all of them, capping how sharp our images can be. Quantum information offers a way out: store the quantum state of incoming starlight and use entanglement to compare it across telescopes without shipping the fragile photons themselves, promising arbitrarily long baselines and quantum-enhanced precision. My own entry point is measuring the tiny time delays of gravitational microlensing with quantum information processing.',
-      zh: '望远镜阵列通过合并星光等效成一架巨型仪器——但在光学波段，把光子在望远镜之间传输会损失殆尽，限制了成像能有多清晰。量子信息提供了出路：把入射星光的量子态存储下来，借助纠缠在各望远镜之间直接比对，而不必运送脆弱的光子本身，从而有望实现任意长的基线与量子增强的测量精度。我自己的切入点，是用量子信息处理测量引力微透镜的微小时间延迟。',
+      en: 'Whether it is the phase of an interference fringe or the arrival-time difference between unresolved lensed images, the information astronomers want is a path-length difference encoded in the quantum state of light — and the sources are often so faint that every photon counts. Classical detection reads light as intensity and throws away the correlations that carry this information, so loss and photon budgets set hard ceilings. Quantum information processing reframes the measurement: entanglement, quantum memories and collective measurements turn the discarded correlations into resources, and photon-optimal algorithms reach the provable minimum cost of reading a phase or a delay. Interferometric imaging and microlensing time delays are two faces of one question — how much sky information can a single photon carry, and how should it be read?',
+      zh: '无论是干涉条纹的相位，还是无法分辨的透镜像之间的到达时间差，天文学家想要的信息都是编码在光量子态里的光程差——而光源往往暗到每一个光子都珍贵。经典探测把光读成强度，丢掉了携带这些信息的光子间关联，于是损耗与光子预算设下硬上限。量子信息处理重新表述这种测量：纠缠、量子存储与集体测量把被丢弃的关联变成资源，光子最优的算法则达到读取一个相位或一个延迟的可证明最小代价。干涉成像与微透镜时间延迟是同一个问题的两面——一个光子能携带多少天空信息，又该如何读取？',
     },
     technical: {
-      en: 'Astronomical measurement is ultimately limited by the quantum nature of light: photons lost between telescopes, and the information ceiling on a fixed photon budget. Quantum information theory asks whether entanglement and collective measurements can lift these ceilings — turning lossless, arbitrarily long-baseline interferometers from impossibility into engineering, and extracting more sky information per photon than any classical strategy. Lensing time delays and closure phases are concrete observables where such quantum advantages can be posed sharply.',
-      zh: '天文测量最终受光的量子本性限制：望远镜之间损失的光子，以及固定光子预算的信息上限。量子信息理论问的是：纠缠与集体测量能否抬升这些上限——把无损、任意长基线的干涉仪从不可能变成工程问题，并从每个光子中提取多于任何经典策略的天空信息。透镜时间延迟与闭合相位，是能把这类量子优势提得尖锐的具体观测量。',
+      en: 'The unifying framework is quantum estimation of photonic parameters: fringe phases and lensing time delays are both path-length information imprinted on quantum states of light, and their extraction obeys quantum, not classical, resource limits. The interferometry line removes the loss ceiling with repeaters and memories and beats sequential detection photon-for-photon via collective measurements; the time-delay line saturates a provable lower bound on the photons needed to resolve a delay, using exponentially fewer photons than classical schemes. The two connect concretely: photon-optimal delay estimation is itself a calibration tool for the optical interferometers the first line aims to build.',
+      zh: '统一框架是光子参数的量子估计：条纹相位与透镜时间延迟都是印在光量子态上的光程信息，其提取服从量子而非经典的资源极限。干涉一条线用中继与存储移除损耗上限、用集体测量按光子数胜过逐个探测；时间延迟一条线以比经典方案指数级更少的光子，饱和分辨延迟所需光子数的可证明下界。两条线还有具体接口：光子最优的延迟估计本身，就是第一条线所要建造的光学干涉仪的校准工具。',
     },
-    tags: ['Quantum sensing', 'Interferometry', 'Microlensing'],
+    tags: ['Quantum limits', 'Interferometry', 'Time delays'],
+    papersLabel: { en: 'Related papers', zh: '相关论文' },
     papers: [
       {
         label: { en: 'Lensing time delays with quantum information processing', zh: '量子信息处理测量透镜时间延迟' },
         arxiv: '2510.07898',
       },
-    ],
-    reading: [
       {
         label: { en: 'Longer-baseline telescopes using quantum repeaters (2012)', zh: '量子中继延长望远镜基线（2012）' },
         arxiv: '1107.2939',

@@ -48,7 +48,7 @@ export const topics: Topic[] = [
         arxiv: '2412.14704',
       },
       {
-        label: { en: 'Intrinsic-alignment stability & diagnostics', zh: '内禀 alignment 稳定性与诊断' },
+        label: { en: 'Intrinsic-alignment stability & diagnostics', zh: '内禀对齐的稳定性与诊断' },
         arxiv: '2511.09544',
       },
     ],

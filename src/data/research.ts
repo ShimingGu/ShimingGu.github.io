@@ -19,7 +19,7 @@ export interface Topic {
   technical?: Localized;
   tags: string[];
   papers?: TopicRef[];
-  papersLabel?: Localized;
+  reading?: TopicRef[];
 }
 
 export const topics: Topic[] = [
@@ -106,12 +106,13 @@ export const topics: Topic[] = [
       zh: '统一框架是光子参数的量子估计：条纹相位与透镜时间延迟都是印在光量子态上的光程信息，其提取服从量子而非经典的资源极限。干涉一条线用中继与存储移除损耗上限、用集体测量按光子数胜过逐个探测；时间延迟一条线以比经典方案指数级更少的光子，饱和分辨延迟所需光子数的可证明下界。两条线还有具体接口：光子最优的延迟估计本身，就是第一条线所要建造的光学干涉仪的校准工具。',
     },
     tags: ['Quantum limits', 'Interferometry', 'Time delays'],
-    papersLabel: { en: 'Related papers', zh: '相关论文' },
     papers: [
       {
         label: { en: 'Lensing time delays with quantum information processing', zh: '量子信息处理测量透镜时间延迟' },
         arxiv: '2510.07898',
       },
+    ],
+    reading: [
       {
         label: { en: 'Longer-baseline telescopes using quantum repeaters (2012)', zh: '量子中继延长望远镜基线（2012）' },
         arxiv: '1107.2939',

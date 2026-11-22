@@ -26,9 +26,23 @@ const t = useTranslations(lang);
   {
     topic.papers && topic.papers.length > 0 && (
       <div class="topic-refs">
-        <span class="ref-label">{topic.papersLabel?.[lang] ?? t('research.papers')}</span>
+        <span class="ref-label">{t('research.papers')}</span>
         <div class="ref-links">
           {topic.papers.map((r) => (
+            <a href={`https://arxiv.org/abs/${r.arxiv}`} target="_blank" rel="noopener">
+              {r.label[lang]} ↗
+            </a>
+          ))}
+        </div>
+      </div>
+    )
+  }
+  {
+    topic.reading && topic.reading.length > 0 && (
+      <div class="topic-refs">
+        <span class="ref-label">{t('research.reading')}</span>
+        <div class="ref-links">
+          {topic.reading.map((r) => (
             <a href={`https://arxiv.org/abs/${r.arxiv}`} target="_blank" rel="noopener">
               {r.label[lang]} ↗
             </a>

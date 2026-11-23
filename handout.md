@@ -1,1 +1,1 @@
-从 ~/Desktop/Photo/processed 全部文件夹中，按你自己的审美独立挑 50 张用于个人网站摄影页，并给出顺序。盲评规则：禁止读取任何已有选片结果与画廊数据（src/data/photos.ts、public/photos、任何 choice 文件或选片脚本），只允许看源照片。输出：名单顺序 + 每张一句理由。
+照片在 /Users/shiminggu/Desktop/Photo/processed（各子文件夹为不同旅行）。按你自己的审美为个人网站摄影页选片并排序，输出名单与每张一句理由。

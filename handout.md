@@ -1,1 +1,1 @@
-照片在 /Users/shiminggu/Desktop/Photo/processed（各子文件夹为不同旅行）。按你自己的审美为个人网站摄影页选片并排序，输出名单与每张一句理由。
+照片在 /Users/shiminggu/Desktop/Photo/processed（各子文件夹为不同旅行）。按你自己的审美为个人网站摄影页选 56 张并排序，尽量抑制单一题材过度重复。输出名单与每张一句理由。

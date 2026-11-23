@@ -12,14 +12,14 @@ export interface Localized {
 export const profile = {
   name: { en: 'Shiming Gu', zh: '顾时铭' } as Localized,
 
-  // TODO: 填写当前职位，例如 'PhD Candidate' / '博士研究生'
-  role: { en: '', zh: '' } as Localized,
+  role: { en: 'T.D. Lee Prize Fellow', zh: '李政道博士后学者' } as Localized,
 
-  // TODO: 填写当前单位，例如 'University of British Columbia' / '英属哥伦比亚大学'
-  affiliation: { en: '', zh: '' } as Localized,
+  affiliation: {
+    en: 'Tsung-Dao Lee Institute, Shanghai Jiao Tong University',
+    zh: '上海交通大学李政道研究所',
+  } as Localized,
 
-  // TODO: 填写所在地（可选），例如 'Vancouver, Canada' / '加拿大 温哥华'
-  location: { en: '', zh: '' } as Localized,
+  location: { en: 'Shanghai, China', zh: '中国 上海' } as Localized,
 
   // TODO: 填写公开联系邮箱
   email: '',
@@ -29,14 +29,13 @@ export const profile = {
     github: 'https://github.com/ShimingGu',
     linkedin: 'https://www.linkedin.com/in/shiming-gu-00b76416b/',
     scholar: '', // TODO: Google Scholar 主页链接
-    orcid: '', // TODO: ORCID 链接
     ads: 'https://scixplorer.org/search?p=1&q=docs%28library%2Ft_AyUoHWSY2ghMtIurEY5A%29&sort=date+desc&d=astrophysics',
   },
 
-  // TODO: 个人简介，按需改写
+  // 个人简介：两段，\n\n 分段；首页按段渲染
   bio: {
-    en: 'I am a cosmologist working on weak gravitational lensing, large-scale structure, and AI methods for cosmological surveys.',
-    zh: '我从事宇宙学研究，方向包括弱引力透镜、大尺度结构，以及面向巡天数据的人工智能方法。',
+    en: 'I am 顾时铭, romanised and western-name-order-applied as Shiming Gu. 时 Shi means time, and 铭 Ming means imprint — hence the title of my PhD thesis, "[The Cosmic Imprint of Time: …](https://open.library.ubc.ca/media/stream/pdf/24/1.0455542/3)".\n\nI completed my PhD in Astronomy from the University of British Columbia in 2026 with [Ludovic van Waerbeke](https://phas.ubc.ca/~waerbeke/index.html), and spent several months as a research associate at the Herzberg Astronomy and Astrophysics Research Centre, Canadian National Research Council. I am currently a T.D. Lee Prize Fellow in the Astronomy and Astrophysics Division, Tsung-Dao Lee Institute, Shanghai Jiao Tong University. Most of my work revolves around the modelling, observation and pipeline systematics of weak gravitational lensing surveys; I also bring advanced techniques such as foundation models, post-training and quantum information tools into astronomical applications.\n\nOutside research I climb mountains, take photographs, write a little Classical Chinese poetry and Science Fiction, and sometimes walk from UBC to Horseshoe Bay😏.',
+    zh: '我2026年博士毕业于加拿大哥伦比亚大学（导师 [Ludovic van Waerbeke](https://phas.ubc.ca/~waerbeke/index.html)），之后在加拿大国家研究委员会赫茨伯格天文与天体物理研究中心做了短期的项目研究助理，现在在上海交通大学李政道研究所工作。我大部分工作围绕弱引力透镜巡天实验的建模、观测与管线系统误差，同时也把基础模型、后训练、量子信息等先进方法带入天文应用。\n\n研究之外，我偶尔会登山、拍照、写一点诗词和科幻，或者从浦东徒步走到虹桥😏。',
   } as Localized,
 
   // 研究兴趣标签（会显示在首页）

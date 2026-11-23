@@ -58,7 +58,24 @@ const hasAffiliation = profile.affiliation[lang] !== '';
     </div>
     <div class="grid grid-2">
       <div>
-        {profile.bio[lang].split('\n\n').map((para) => <p>{para}</p>)}
+        {
+          profile.bio[lang]
+            .split('\n\n')
+            .map((para) => (
+              <p>
+                {para.split(/(\[[^\]]+\]\(https?:\/\/[^)]+\))/g).map((seg) => {
+                  const m = seg.match(/^\[([^\]]+)\]\((https?:\/\/[^)]+)\)$/);
+                  return m ? (
+                    <a href={m[2]} target="_blank" rel="noopener">
+                      {m[1]}
+                    </a>
+                  ) : (
+                    seg
+                  );
+                })}
+              </p>
+            ))
+        }
         <h3 style="font-size: 0.95rem; margin-top: 1.5rem;">{t('home.interests')}</h3>
         <div class="chips">
           {profile.interests.map((i) => <span class="chip">{i[lang]}</span>)}
@@ -118,12 +135,6 @@ const hasAffiliation = profile.affiliation[lang] !== '';
                   <a href={profile.links.scholar} target="_blank" rel="noopener">Scholar</a>
                 </>
               )}
-              {profile.links.orcid && (
-                <>
-                  {' · '}
-                  <a href={profile.links.orcid} target="_blank" rel="noopener">ORCID</a>
-                </>
-              )}
               {profile.links.ads && (
                 <>
                   {' · '}
@@ -132,18 +143,16 @@ const hasAffiliation = profile.affiliation[lang] !== '';
               )}
             </dd>
           </div>
-          <div>
-            <dt>{t('common.cv')}</dt>
-            <dd>
-              {
-                profile.cv ? (
+          {
+            profile.cv && (
+              <div>
+                <dt>{t('common.cv')}</dt>
+                <dd>
                   <a href={profile.cv}>{t('common.cv')} (PDF)</a>
-                ) : (
-                  t('common.cvNote')
-                )
-              }
-            </dd>
-          </div>
+                </dd>
+              </div>
+            )
+          }
         </dl>
       </div>
     </div>

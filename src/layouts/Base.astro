@@ -13,7 +13,13 @@ interface Props {
 
 const { title, description } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
-const desc = description ?? profile.bio[lang];
+const paras = profile.bio[lang].split('\n\n');
+const desc =
+  description ??
+  (paras.find((p) => /cosmology|宇宙学|lensing|透镜/.test(p)) ?? paras[0]).replace(
+    /\[([^\]]+)\]\([^)]+\)/g,
+    '$1',
+  );
 ---
 
 <!doctype html>

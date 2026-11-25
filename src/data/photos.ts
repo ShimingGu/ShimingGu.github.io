@@ -106,11 +106,11 @@ export const photos: Photo[] = [
     caption: { en: "The Arc lists battles; the Tower slips in.", zh: "凯旋门列着战名，铁塔挤进缝里。" },
   },
   {
-    src: "/photos/2026-banff-dsc-8372.jpg",
-    full: "/photos/full/2026-banff-dsc-8372.jpg",
+    src: '/photos/banff-valley-view.jpg',
+    full: '/photos/full/banff-valley-view.jpg',
     hdr: true,
-    alt: { en: "蓝天白云前保持平衡的顶盖石柱", zh: "蓝天白云前保持平衡的顶盖石柱" },
-    caption: { en: "A caprock hoodoo keeps its balance.", zh: "顶盖石柱保持着平衡。" },
+    alt: { en: 'The Bow valley and Banff town seen from the gondola summit', zh: '缆车山顶俯瞰弓河谷与班夫镇' },
+    caption: { en: 'The valley spreads below the summit.', zh: '山顶之下，整条谷摊开。' },
   },
   {
     src: '/photos/hexi-salt-rails.jpg',
@@ -126,11 +126,11 @@ export const photos: Photo[] = [
     caption: { en: "Three on a bench, Alps across the water.", zh: "长椅三人，水对面是阿尔卑斯。" },
   },
   {
-    src: "/photos/2026-hexi-dsc-1116.jpg",
-    full: "/photos/full/2026-hexi-dsc-1116.jpg",
+    src: '/photos/hexi-stupas.jpg',
+    full: '/photos/full/hexi-stupas.jpg',
     hdr: true,
-    alt: { en: "驶过广阔劣地的一辆红卡车", zh: "驶过广阔劣地的一辆红卡车" },
-    caption: { en: "One red truck measures the badlands.", zh: "一辆红卡车量出劣地的大。" },
+    alt: { en: 'A row of white Buddhist stupas against a pale sky', zh: '淡色天空下一字排开的白塔' },
+    caption: { en: 'White stupas in a row.', zh: '一字排开的白塔。' },
   },
   {
     src: "/photos/2024-norddeutscheland-dsc-2734.jpg",
@@ -224,11 +224,11 @@ export const photos: Photo[] = [
     caption: { en: "Signs and wires lead to a red rooftop.", zh: "招牌与电线尽头一点红。" },
   },
   {
-    src: "/photos/2026-hexi-dsc-1233.jpg",
-    full: "/photos/full/2026-hexi-dsc-1233.jpg",
+    src: '/photos/hexi-yadan-fleet.jpg',
+    full: '/photos/full/hexi-yadan-fleet.jpg',
     hdr: true,
-    alt: { en: "爬上干净沙脊的两个小点", zh: "爬上干净沙脊的两个小点" },
-    caption: { en: "Two dots climb a clean dune.", zh: "两个点爬上一道净沙。" },
+    alt: { en: 'Yadan mudstone ridges like ships on a grey desert plain', zh: '灰色荒漠上如舰船列阵的雅丹土丘' },
+    caption: { en: 'A stone fleet anchored in the grey sea.', zh: '石舰队泊在灰海里。' },
   },
   {
     src: "/photos/2023-paris-dsc-1958-enhanced-nr.jpg",

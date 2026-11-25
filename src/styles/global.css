@@ -372,6 +372,39 @@ main {
   height: auto;
 }
 
+.hero-web-shell {
+  position: relative;
+}
+
+.hero-web-canvas,
+.hero-web-fallback {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.3s ease;
+}
+
+.hero-web-canvas {
+  opacity: 0;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.hero-web-canvas.is-dragging {
+  cursor: grabbing;
+}
+
+.hero-web-shell.is-ready .hero-web-canvas {
+  opacity: 1;
+}
+
+.hero-web-shell.is-ready .hero-web-fallback {
+  opacity: 0;
+  pointer-events: none;
+}
+
 @media (max-width: 760px) {
   .hero {
     grid-template-columns: 1fr;

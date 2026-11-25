@@ -1,196 +1,445 @@
 ---
 ---
 
-<canvas id="cosmic-web" class="hero-web" aria-hidden="true"></canvas>
+<div class="hero-web hero-web-shell" data-cosmic-web>
+  <svg class="hero-web-fallback" viewBox="0 0 320 320" aria-hidden="true">
+    <g fill="none" stroke="#1d1d1f" stroke-width="0.9" opacity="0.2">
+      <path d="M62 93 Q105 62 145 105 T226 89 M62 93 Q88 145 69 193 T128 245 M145 105 Q158 151 128 245 M226 89 Q246 137 218 178 T128 245 M69 193 Q142 176 218 178" />
+      <path d="M41 118 Q62 93 92 83 M92 83 Q123 75 145 105 M145 105 Q183 82 207 111 M207 111 Q238 120 251 150 M218 178 Q228 207 199 230 M199 230 Q160 256 128 245 M128 245 Q86 241 69 215" />
+    </g>
+    <g fill="#1d1d1f" opacity="0.72">
+      <circle cx="62" cy="93" r="3.2" /><circle cx="41" cy="118" r="1.7" />
+      <circle cx="92" cy="83" r="2.1" /><circle cx="145" cy="105" r="3.5" />
+      <circle cx="207" cy="111" r="2.2" /><circle cx="226" cy="89" r="3.1" />
+      <circle cx="251" cy="150" r="1.8" /><circle cx="218" cy="178" r="3.4" />
+      <circle cx="199" cy="230" r="2.2" /><circle cx="128" cy="245" r="3.3" />
+      <circle cx="69" cy="215" r="1.8" /><circle cx="69" cy="193" r="2.8" />
+      <circle cx="105" cy="143" r="1.5" /><circle cx="169" cy="167" r="2.2" />
+      <circle cx="151" cy="211" r="1.4" /><circle cx="237" cy="53" r="1.3" />
+    </g>
+  </svg>
+  <canvas
+    id="cosmic-web"
+    class="hero-web-canvas"
+    role="img"
+    aria-label="可拖拽旋转的三维宇宙网"
+    title="拖拽旋转宇宙网"
+  ></canvas>
+</div>
 
 <script>
-  const canvas = document.getElementById('cosmic-web') as HTMLCanvasElement;
-  const ctx = canvas.getContext('2d')!;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const SPEED = 1.5;
+  import * as THREE from 'three';
 
-  interface WebNode {
-    bx: number; by: number; x: number; y: number;
-    r: number; ph: number; sp: number; amp: number; deg: number;
-  }
-  interface WebEdge {
-    i: number; j: number; bend: number;
-  }
-  interface Pulse {
-    e: number; t: number; v: number;
-  }
+  const shell = document.querySelector<HTMLElement>('[data-cosmic-web]');
+  const canvas = document.getElementById('cosmic-web') as HTMLCanvasElement | null;
 
-  let nodes: WebNode[] = [];
-  let edges: WebEdge[] = [];
-  let pulses: Pulse[] = [];
-  let w = 0;
-  let h = 0;
-  let R = 0;
+  if (shell && canvas) {
+    try {
+      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+      let reduced = reducedMotion.matches;
+      const abort = new AbortController();
+      const { signal } = abort;
 
-  const mk = (x: number, y: number, r: number): WebNode => ({
-    bx: x, by: y, x, y, r,
-    ph: Math.random() * Math.PI * 2,
-    sp: 0.15 + Math.random() * 0.25,
-    amp: 1.5 + Math.random() * 2.5,
-    deg: 0,
-  });
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: 'low-power',
+      });
+      renderer.setClearColor(0x000000, 0);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-  function build() {
-    const rect = canvas.getBoundingClientRect();
-    w = rect.width;
-    h = rect.height;
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    R = 0.24 * Math.min(w, h);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 50);
+      camera.position.set(0, 0, 7.2);
 
-    const centers = Array.from({ length: 5 }, () => ({
-      x: (0.15 + 0.7 * Math.random()) * w,
-      y: (0.15 + 0.7 * Math.random()) * h,
-    }));
-    nodes = [];
-    for (const c of centers) {
-      const n = 6 + Math.floor(Math.random() * 5);
-      for (let i = 0; i < n; i++) {
-        const a = Math.random() * Math.PI * 2;
-        const d = Math.random() * Math.min(w, h) * 0.13;
-        nodes.push(mk(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d, 1 + Math.random() * 2));
+      const web = new THREE.Group();
+      web.rotation.order = 'YXZ';
+      scene.add(web);
+
+      scene.add(new THREE.AmbientLight(0xffffff, 1.25));
+      const keyLight = new THREE.DirectionalLight(0xffffff, 2.1);
+      keyLight.position.set(3, 4, 6);
+      scene.add(keyLight);
+
+      let seed = 0x6d2b79f5;
+      const random = () => {
+        seed |= 0;
+        seed = (seed + 0x6d2b79f5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+
+      interface WebNode {
+        position: THREE.Vector3;
+        radius: number;
+        degree: number;
       }
-    }
-    for (let i = 0; i < centers.length; i++) {
-      for (let j = i + 1; j < centers.length; j++) {
-        const a = centers[i];
-        const b = centers[j];
-        if (Math.hypot(a.x - b.x, a.y - b.y) < 0.6 * Math.min(w, h)) {
-          const steps = 4 + Math.floor(Math.random() * 3);
-          for (let k = 1; k < steps; k++) {
-            const t = k / steps;
-            nodes.push(
-              mk(
-                a.x + (b.x - a.x) * t + (Math.random() - 0.5) * R * 0.35,
-                a.y + (b.y - a.y) * t + (Math.random() - 0.5) * R * 0.35,
-                0.8 + Math.random() * 1.4,
-              ),
-            );
+      interface WebEdge {
+        a: number;
+        b: number;
+        control: THREE.Vector3;
+        length: number;
+      }
+
+      const nodes: WebNode[] = [];
+      const edges: WebEdge[] = [];
+      const edgeKeys = new Set<string>();
+      const centers = [
+        new THREE.Vector3(-1.03, 0.52, 0.12),
+        new THREE.Vector3(0.48, 1.03, -0.34),
+        new THREE.Vector3(1.12, -0.24, 0.34),
+        new THREE.Vector3(-0.48, -1.03, -0.26),
+        new THREE.Vector3(0.02, -0.02, 0.66),
+      ];
+      const centerIndices: number[] = [];
+
+      const addNode = (position: THREE.Vector3, radius: number) => {
+        nodes.push({ position, radius, degree: 0 });
+        return nodes.length - 1;
+      };
+      const addEdge = (a: number, b: number) => {
+        if (a === b) return;
+        const key = a < b ? `${a}:${b}` : `${b}:${a}`;
+        if (edgeKeys.has(key)) return;
+        edgeKeys.add(key);
+        const start = nodes[a].position;
+        const end = nodes[b].position;
+        const delta = end.clone().sub(start);
+        const length = delta.length();
+        const axis = new THREE.Vector3(random() - 0.5, random() - 0.5, random() - 0.5);
+        axis.cross(delta).normalize();
+        const control = start
+          .clone()
+          .lerp(end, 0.5)
+          .addScaledVector(axis, length * (random() - 0.5) * 0.28);
+        control.z += (random() - 0.5) * length * 0.12;
+        edges.push({ a, b, control, length });
+        nodes[a].degree++;
+        nodes[b].degree++;
+      };
+
+      centers.forEach((center) => {
+        const centerIndex = addNode(center.clone(), 0.066);
+        centerIndices.push(centerIndex);
+        const count = 7 + Math.floor(random() * 3);
+        for (let i = 0; i < count; i++) {
+          const direction = new THREE.Vector3(
+            random() * 2 - 1,
+            random() * 2 - 1,
+            random() * 2 - 1,
+          ).normalize();
+          const distance = 0.16 + Math.pow(random(), 0.65) * 0.49;
+          const position = center.clone().addScaledVector(direction, distance);
+          const nodeIndex = addNode(position, 0.025 + random() * 0.026);
+          addEdge(centerIndex, nodeIndex);
+        }
+      });
+
+      const bridgePairs = [
+        [0, 1], [1, 2], [2, 3], [3, 0],
+        [0, 4], [1, 4], [2, 4], [3, 4],
+      ];
+      for (const [from, to] of bridgePairs) {
+        let previous = centerIndices[from];
+        const steps = 3 + Math.floor(random() * 2);
+        for (let step = 1; step < steps; step++) {
+          const t = step / steps;
+          const position = centers[from].clone().lerp(centers[to], t);
+          position.add(
+            new THREE.Vector3(
+              (random() - 0.5) * 0.2,
+              (random() - 0.5) * 0.2,
+              (random() - 0.5) * 0.3,
+            ),
+          );
+          const current = addNode(position, 0.022 + random() * 0.018);
+          addEdge(previous, current);
+          previous = current;
+        }
+        addEdge(previous, centerIndices[to]);
+      }
+
+      for (let i = 0; i < 8; i++) {
+        addNode(
+          new THREE.Vector3(
+            (random() - 0.5) * 3.5,
+            (random() - 0.5) * 3.25,
+            (random() - 0.5) * 1.8,
+          ),
+          0.018 + random() * 0.015,
+        );
+      }
+
+      nodes.forEach((node, i) => {
+        const nearest = nodes
+          .map((other, j) => ({ j, distance: node.position.distanceTo(other.position) }))
+          .filter((item) => item.j !== i && item.distance < 0.68)
+          .sort((a, b) => a.distance - b.distance)
+          .slice(0, 2);
+        nearest.forEach(({ j }) => addEdge(i, j));
+      });
+
+      const linePositions: number[] = [];
+      const lineColors: number[] = [];
+      const ink = new THREE.Color('#1d1d1f');
+      const muted = new THREE.Color('#86868b');
+      const sampleCurve = (edge: WebEdge, t: number, target: THREE.Vector3) => {
+        const start = nodes[edge.a].position;
+        const end = nodes[edge.b].position;
+        const u = 1 - t;
+        target.set(0, 0, 0);
+        target.addScaledVector(start, u * u);
+        target.addScaledVector(edge.control, 2 * u * t);
+        target.addScaledVector(end, t * t);
+        return target;
+      };
+      const pointA = new THREE.Vector3();
+      const pointB = new THREE.Vector3();
+      edges.forEach((edge) => {
+        const color = ink.clone().lerp(muted, Math.min(0.45, edge.length * 0.16));
+        for (let step = 0; step < 12; step++) {
+          sampleCurve(edge, step / 12, pointA);
+          sampleCurve(edge, (step + 1) / 12, pointB);
+          linePositions.push(pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z);
+          lineColors.push(color.r, color.g, color.b, color.r, color.g, color.b);
+        }
+      });
+      const lineGeometry = new THREE.BufferGeometry();
+      lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+      lineGeometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 3));
+      const lineMaterial = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.25,
+        depthWrite: false,
+      });
+      const filaments = new THREE.LineSegments(lineGeometry, lineMaterial);
+      web.add(filaments);
+
+      const nodeGeometry = new THREE.SphereGeometry(1, 12, 8);
+      const nodeMaterial = new THREE.MeshStandardMaterial({
+        color: '#242426',
+        roughness: 0.48,
+        metalness: 0.05,
+      });
+      const nodeMesh = new THREE.InstancedMesh(nodeGeometry, nodeMaterial, nodes.length);
+      const matrix = new THREE.Matrix4();
+      const quaternion = new THREE.Quaternion();
+      const scale = new THREE.Vector3();
+      nodes.forEach((node, i) => {
+        scale.setScalar(node.radius);
+        matrix.compose(node.position, quaternion, scale);
+        nodeMesh.setMatrixAt(i, matrix);
+      });
+      nodeMesh.instanceMatrix.needsUpdate = true;
+      web.add(nodeMesh);
+
+      const glowCanvas = document.createElement('canvas');
+      glowCanvas.width = 64;
+      glowCanvas.height = 64;
+      const glowContext = glowCanvas.getContext('2d')!;
+      const gradient = glowContext.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gradient.addColorStop(0, 'rgba(255,255,255,0.8)');
+      gradient.addColorStop(0.25, 'rgba(255,255,255,0.28)');
+      gradient.addColorStop(1, 'rgba(255,255,255,0)');
+      glowContext.fillStyle = gradient;
+      glowContext.fillRect(0, 0, 64, 64);
+      const glowTexture = new THREE.CanvasTexture(glowCanvas);
+      const hubNodes = nodes.filter((node) => node.degree >= 5);
+      const glowGeometry = new THREE.BufferGeometry();
+      glowGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute(
+          hubNodes.flatMap((node) => [node.position.x, node.position.y, node.position.z]),
+          3,
+        ),
+      );
+      const glowMaterial = new THREE.PointsMaterial({
+        color: '#1d1d1f',
+        size: 0.43,
+        map: glowTexture,
+        transparent: true,
+        opacity: 0.14,
+        depthWrite: false,
+        sizeAttenuation: true,
+      });
+      const glows = new THREE.Points(glowGeometry, glowMaterial);
+      web.add(glows);
+
+      const pulseEdges = edges
+        .map((edge, index) => ({ edge, index, rank: random() }))
+        .sort((a, b) => a.rank - b.rank)
+        .slice(0, 11);
+      const pulseGeometry = new THREE.SphereGeometry(1, 8, 6);
+      const pulseMaterial = new THREE.MeshBasicMaterial({
+        color: '#1d1d1f',
+        transparent: true,
+        opacity: 0.64,
+        depthWrite: false,
+      });
+      const pulseMesh = new THREE.InstancedMesh(pulseGeometry, pulseMaterial, pulseEdges.length);
+      const pulses = pulseEdges.map(({ edge }, i) => ({
+        edge,
+        t: (i + random()) / pulseEdges.length,
+        speed: 0.024 + random() * 0.026,
+      }));
+      const pulsePosition = new THREE.Vector3();
+      const updatePulses = (dt: number) => {
+        pulses.forEach((pulse, i) => {
+          if (!reduced) pulse.t = (pulse.t + dt * pulse.speed) % 1;
+          sampleCurve(pulse.edge, pulse.t, pulsePosition);
+          scale.setScalar(0.025);
+          matrix.compose(pulsePosition, quaternion, scale);
+          pulseMesh.setMatrixAt(i, matrix);
+        });
+        pulseMesh.instanceMatrix.needsUpdate = true;
+      };
+      updatePulses(0);
+      web.add(pulseMesh);
+
+      let targetX = -0.18;
+      let targetY = 0.55;
+      let currentX = targetX;
+      let currentY = targetY;
+      let velocityX = 0;
+      let velocityY = 0;
+      let dragging = false;
+      let lastPointerX = 0;
+      let lastPointerY = 0;
+      let lastInteraction = 0;
+      let inView = true;
+      let needsRender = true;
+
+      const pointerDown = (event: PointerEvent) => {
+        if (event.button !== 0) return;
+        dragging = true;
+        lastPointerX = event.clientX;
+        lastPointerY = event.clientY;
+        velocityX = 0;
+        velocityY = 0;
+        lastInteraction = performance.now();
+        canvas.classList.add('is-dragging');
+        canvas.setPointerCapture(event.pointerId);
+      };
+      const pointerMove = (event: PointerEvent) => {
+        if (!dragging) return;
+        const dx = event.clientX - lastPointerX;
+        const dy = event.clientY - lastPointerY;
+        lastPointerX = event.clientX;
+        lastPointerY = event.clientY;
+        targetY += dx * 0.008;
+        targetX = THREE.MathUtils.clamp(targetX + dy * 0.008, -1.1, 1.1);
+        velocityY = dx * 0.0007;
+        velocityX = dy * 0.0007;
+        lastInteraction = performance.now();
+        needsRender = true;
+      };
+      const pointerUp = (event: PointerEvent) => {
+        if (!dragging) return;
+        dragging = false;
+        lastInteraction = performance.now();
+        canvas.classList.remove('is-dragging');
+        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+      };
+      canvas.addEventListener('pointerdown', pointerDown, { signal });
+      canvas.addEventListener('pointermove', pointerMove, { signal });
+      canvas.addEventListener('pointerup', pointerUp, { signal });
+      canvas.addEventListener('pointercancel', pointerUp, { signal });
+
+      const resize = () => {
+        const rect = shell.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) return;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setSize(rect.width, rect.height, false);
+        camera.aspect = rect.width / rect.height;
+        camera.updateProjectionMatrix();
+        needsRender = true;
+      };
+      const resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(shell);
+      const intersectionObserver = new IntersectionObserver(
+        ([entry]) => {
+          inView = entry.isIntersecting;
+          needsRender = true;
+        },
+        { rootMargin: '100px' },
+      );
+      intersectionObserver.observe(shell);
+
+      const visibilityChange = () => {
+        needsRender = true;
+      };
+      document.addEventListener('visibilitychange', visibilityChange, { signal });
+      const motionChange = (event: MediaQueryListEvent) => {
+        reduced = event.matches;
+        velocityX = 0;
+        velocityY = 0;
+        needsRender = true;
+      };
+      reducedMotion.addEventListener('change', motionChange, { signal });
+
+      let previousTime = performance.now();
+      let frame = 0;
+      let disposed = false;
+      const tick = (now: number) => {
+        if (disposed) return;
+        const dt = Math.min((now - previousTime) / 1000, 0.05);
+        previousTime = now;
+        if (inView && !document.hidden) {
+          if (!dragging) {
+            targetY += velocityY;
+            targetX = THREE.MathUtils.clamp(targetX + velocityX, -1.1, 1.1);
+            velocityX *= 0.9;
+            velocityY *= 0.9;
+            if (!reduced && now - lastInteraction > 2600) targetY += dt * 0.065;
+          }
+          const difference =
+            Math.abs(targetX - currentX) + Math.abs(targetY - currentY) +
+            Math.abs(velocityX) + Math.abs(velocityY);
+          currentX += (targetX - currentX) * 0.09;
+          currentY += (targetY - currentY) * 0.09;
+          web.rotation.set(currentX, currentY, 0.08);
+          if (!reduced) updatePulses(dt);
+          if (!reduced || needsRender || difference > 0.00005) {
+            renderer.render(scene, camera);
+            needsRender = false;
           }
         }
-      }
-    }
-    for (let i = 0; i < 8; i++) {
-      nodes.push(mk(Math.random() * w, Math.random() * h, 0.7 + Math.random()));
-    }
+        frame = requestAnimationFrame(tick);
+      };
 
-    edges = [];
-    nodes.forEach((n, i) => {
-      const near = nodes
-        .map((m, j) => ({ j, d: Math.hypot(m.bx - n.bx, m.by - n.by) }))
-        .filter((o) => o.j !== i && o.d < R)
-        .sort((a, b) => a.d - b.d)
-        .slice(0, 3);
-      for (const { j } of near) {
-        if (!edges.some((e) => (e.i === i && e.j === j) || (e.i === j && e.j === i))) {
-          edges.push({ i, j, bend: (Math.random() - 0.5) * 0.35 });
-          nodes[i].deg++;
-          nodes[j].deg++;
-        }
-      }
-    });
-    pulses = edges
-      .map((_, e) => ({ e, t: Math.random(), v: 0.00005 + Math.random() * 0.00009 }))
-      .filter(() => Math.random() < 0.14);
-  }
+      resize();
+      web.rotation.set(currentX, currentY, 0.08);
+      renderer.render(scene, camera);
+      shell.classList.add('is-ready');
+      frame = requestAnimationFrame(tick);
 
-  const edgePoint = (e: WebEdge, t: number) => {
-    const a = nodes[e.i];
-    const b = nodes[e.j];
-    const mx = (a.x + b.x) / 2;
-    const my = (a.y + b.y) / 2;
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    const cx = mx - dy * e.bend;
-    const cy = my + dx * e.bend;
-    const u = 1 - t;
-    return {
-      x: u * u * a.x + 2 * u * t * cx + t * t * b.x,
-      y: u * u * a.y + 2 * u * t * cy + t * t * b.y,
-    };
-  };
-
-  function draw(t: number) {
-    ctx.clearRect(0, 0, w, h);
-    for (const e of edges) {
-      const a = nodes[e.i];
-      const b = nodes[e.j];
-      const d = Math.hypot(b.x - a.x, b.y - a.y);
-      const alpha = 0.06 + 0.22 * Math.max(0, 1 - d / R);
-      ctx.strokeStyle = `rgba(29,29,31,${alpha})`;
-      ctx.lineWidth = 0.8;
-      const p = edgePoint(e, 0.5);
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.quadraticCurveTo(p.x * 2 - (a.x + b.x) / 2, p.y * 2 - (a.y + b.y) / 2, b.x, b.y);
-      ctx.stroke();
-    }
-    for (const p of pulses) {
-      const pos = edgePoint(edges[p.e], p.t);
-      ctx.fillStyle = 'rgba(29,29,31,0.45)';
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, 1.2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    for (const n of nodes) {
-      if (n.deg >= 4) {
-        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 6);
-        g.addColorStop(0, 'rgba(29,29,31,0.14)');
-        g.addColorStop(1, 'rgba(29,29,31,0)');
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r * 6, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      const r = n.r * (1 + 0.12 * Math.sin((t / 1000) * 1.3 * SPEED + n.ph));
-      ctx.fillStyle = 'rgba(29,29,31,0.75)';
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-      ctx.fill();
+      document.addEventListener(
+        'astro:before-swap',
+        () => {
+          disposed = true;
+          cancelAnimationFrame(frame);
+          abort.abort();
+          resizeObserver.disconnect();
+          intersectionObserver.disconnect();
+          lineGeometry.dispose();
+          lineMaterial.dispose();
+          nodeGeometry.dispose();
+          nodeMaterial.dispose();
+          glowGeometry.dispose();
+          glowMaterial.dispose();
+          glowTexture.dispose();
+          pulseGeometry.dispose();
+          pulseMaterial.dispose();
+          renderer.dispose();
+        },
+        { once: true, signal },
+      );
+    } catch (error) {
+      console.warn('3D cosmic web unavailable; using the static fallback.', error);
+      shell.classList.add('is-fallback');
     }
   }
-
-  let last = 0;
-  function loop(t: number) {
-    if (!document.hidden) {
-      const dt = last ? t - last : 16;
-      last = t;
-      const st = t * SPEED;
-      for (const n of nodes) {
-        n.x = n.bx + Math.sin((st / 1000) * n.sp + n.ph) * n.amp;
-        n.y = n.by + Math.cos((st / 1000) * n.sp * 0.8 + n.ph) * n.amp;
-      }
-      for (const p of pulses) {
-        p.t += p.v * dt * SPEED;
-        if (p.t > 1) {
-          p.t = 0;
-          p.e = Math.floor(Math.random() * edges.length);
-        }
-      }
-      draw(st);
-    }
-    requestAnimationFrame(loop);
-  }
-
-  build();
-  if (reduced) {
-    draw(0);
-  } else {
-    requestAnimationFrame(loop);
-  }
-  let rt = 0;
-  addEventListener('resize', () => {
-    clearTimeout(rt);
-    rt = window.setTimeout(() => {
-      build();
-      if (reduced) draw(0);
-    }, 150);
-  });
 </script>

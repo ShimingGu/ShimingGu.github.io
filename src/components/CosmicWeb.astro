@@ -22,7 +22,7 @@
     id="cosmic-web"
     class="hero-web-canvas"
     role="img"
-    aria-label="可拖拽旋转的三维宇宙网"
+    aria-label="具有周期边界和动态最近邻连线的三维宇宙网，可拖拽旋转"
     title="拖拽旋转宇宙网"
   ></canvas>
 </div>
@@ -70,145 +70,209 @@
         t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
         return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
       };
+      const randomVector = (amplitude: number) =>
+        new THREE.Vector3(
+          (random() - 0.5) * amplitude,
+          (random() - 0.5) * amplitude,
+          (random() - 0.5) * amplitude,
+        );
+
+      // A cubic periodic volume with anisotropic display dimensions. Positions wrap;
+      // neighbour distances always use the shortest periodic image.
+      const BOX = new THREE.Vector3(4.4, 4.0, 3.2);
+      const LINK_DISTANCE = 0.92;
+      const LINK_INTERVAL = 0.8;
+      const CURVE_SEGMENTS = 10;
+      const wrap = (value: number, size: number) =>
+        THREE.MathUtils.euclideanModulo(value + size / 2, size) - size / 2;
+      const periodicDelta = (a: THREE.Vector3, b: THREE.Vector3, target: THREE.Vector3) => {
+        target.copy(b).sub(a);
+        target.x -= Math.round(target.x / BOX.x) * BOX.x;
+        target.y -= Math.round(target.y / BOX.y) * BOX.y;
+        target.z -= Math.round(target.z / BOX.z) * BOX.z;
+        return target;
+      };
 
       interface WebNode {
         position: THREE.Vector3;
+        velocity: THREE.Vector3;
         radius: number;
         degree: number;
       }
       interface WebEdge {
         a: number;
         b: number;
-        control: THREE.Vector3;
+        key: string;
+        bend: THREE.Vector3;
         length: number;
       }
 
       const nodes: WebNode[] = [];
       const edges: WebEdge[] = [];
-      const edgeKeys = new Set<string>();
-      const centers = [
-        new THREE.Vector3(-1.03, 0.52, 0.12),
-        new THREE.Vector3(0.48, 1.03, -0.34),
-        new THREE.Vector3(1.12, -0.24, 0.34),
-        new THREE.Vector3(-0.48, -1.03, -0.26),
-        new THREE.Vector3(0.02, -0.02, 0.66),
-      ];
-      const centerIndices: number[] = [];
+      const bendCache = new Map<string, THREE.Vector3>();
 
-      const addNode = (position: THREE.Vector3, radius: number) => {
-        nodes.push({ position, radius, degree: 0 });
+      // Anisotropic halos and uneven curved filaments surround a central void.
+      // This is an LSS-inspired initial configuration, not a cosmological simulation.
+      const halos = [
+        { position: new THREE.Vector3(-1.28, 0.72, -0.28), count: 11, radius: 0.074, extent: 0.54 },
+        { position: new THREE.Vector3(-0.52, 1.28, 0.12), count: 6, radius: 0.045, extent: 0.34 },
+        { position: new THREE.Vector3(0.52, 0.93, -0.48), count: 4, radius: 0.037, extent: 0.27 },
+        { position: new THREE.Vector3(1.30, 0.18, 0.28), count: 10, radius: 0.065, extent: 0.47 },
+        { position: new THREE.Vector3(0.78, -1.06, -0.24), count: 7, radius: 0.052, extent: 0.38 },
+        { position: new THREE.Vector3(-0.38, -1.25, 0.28), count: 4, radius: 0.035, extent: 0.26 },
+        { position: new THREE.Vector3(-1.38, -0.48, 0.42), count: 7, radius: 0.050, extent: 0.37 },
+        { position: new THREE.Vector3(1.55, 1.05, -0.55), count: 3, radius: 0.032, extent: 0.22 },
+        { position: new THREE.Vector3(-0.95, 1.50, 0.55), count: 3, radius: 0.034, extent: 0.23 },
+      ];
+      const clusterVelocities = halos.map(() =>
+        randomVector(2).normalize().multiplyScalar(0.005 + random() * 0.003),
+      );
+
+      const addNode = (position: THREE.Vector3, radius: number, velocity: THREE.Vector3) => {
+        nodes.push({ position, velocity, radius, degree: 0 });
         return nodes.length - 1;
       };
-      const addEdge = (a: number, b: number) => {
-        if (a === b) return;
-        const key = a < b ? `${a}:${b}` : `${b}:${a}`;
-        if (edgeKeys.has(key)) return;
-        edgeKeys.add(key);
-        const start = nodes[a].position;
-        const end = nodes[b].position;
-        const delta = end.clone().sub(start);
-        const length = delta.length();
-        const axis = new THREE.Vector3(random() - 0.5, random() - 0.5, random() - 0.5);
-        axis.cross(delta).normalize();
-        const control = start
-          .clone()
-          .lerp(end, 0.5)
-          .addScaledVector(axis, length * (random() - 0.5) * 0.28);
-        control.z += (random() - 0.5) * length * 0.12;
-        edges.push({ a, b, control, length });
-        nodes[a].degree++;
-        nodes[b].degree++;
-      };
+      const localVelocity = (flow: THREE.Vector3, spread = 0.004) =>
+        flow.clone().add(randomVector(spread));
 
-      centers.forEach((center) => {
-        const centerIndex = addNode(center.clone(), 0.066);
-        centerIndices.push(centerIndex);
-        const count = 7 + Math.floor(random() * 3);
-        for (let i = 0; i < count; i++) {
-          const direction = new THREE.Vector3(
-            random() * 2 - 1,
-            random() * 2 - 1,
-            random() * 2 - 1,
-          ).normalize();
-          const distance = 0.16 + Math.pow(random(), 0.65) * 0.49;
-          const position = center.clone().addScaledVector(direction, distance);
-          const nodeIndex = addNode(position, 0.025 + random() * 0.026);
-          addEdge(centerIndex, nodeIndex);
+      halos.forEach((halo, cluster) => {
+        const flow = clusterVelocities[cluster];
+        addNode(halo.position.clone(), halo.radius, flow.clone());
+        for (let i = 0; i < halo.count; i++) {
+          const distance = 0.07 + Math.pow(random(), 1.35) * halo.extent;
+          const offset = randomVector(2).normalize().multiplyScalar(distance);
+          offset.x *= 1.2;
+          offset.y *= 0.72;
+          offset.z *= 0.85;
+          const position = halo.position.clone().add(offset);
+          const subhalo = i === 0 && halo.count >= 6 ? 0.012 : 0;
+          addNode(position, 0.014 + random() * 0.024 + subhalo, localVelocity(flow));
         }
       });
 
-      const bridgePairs = [
-        [0, 1], [1, 2], [2, 3], [3, 0],
-        [0, 4], [1, 4], [2, 4], [3, 4],
+      const filamentSpines = [
+        { from: 0, to: 1, count: 5, bend: new THREE.Vector3(-0.10, 0.18, 0.20) },
+        { from: 1, to: 2, count: 5, bend: new THREE.Vector3(0.00, 0.16, -0.18) },
+        { from: 2, to: 3, count: 6, bend: new THREE.Vector3(0.18, 0.08, 0.22) },
+        { from: 3, to: 4, count: 5, bend: new THREE.Vector3(0.22, -0.05, -0.18) },
+        { from: 4, to: 5, count: 5, bend: new THREE.Vector3(0.05, -0.16, 0.20) },
+        { from: 5, to: 6, count: 4, bend: new THREE.Vector3(-0.12, -0.08, -0.16) },
+        { from: 6, to: 0, count: 5, bend: new THREE.Vector3(-0.20, 0.04, 0.20) },
+        { from: 2, to: 7, count: 4, bend: new THREE.Vector3(0.10, 0.10, 0.10) },
+        { from: 7, to: 3, count: 4, bend: new THREE.Vector3(0.15, -0.10, -0.10) },
+        { from: 1, to: 8, count: 3, bend: new THREE.Vector3(-0.12, 0.02, 0.12) },
+        { from: 8, to: 0, count: 3, bend: new THREE.Vector3(-0.16, 0.06, -0.08) },
       ];
-      for (const [from, to] of bridgePairs) {
-        let previous = centerIndices[from];
-        const steps = 3 + Math.floor(random() * 2);
-        for (let step = 1; step < steps; step++) {
-          const t = step / steps;
-          const position = centers[from].clone().lerp(centers[to], t);
-          position.add(
-            new THREE.Vector3(
-              (random() - 0.5) * 0.2,
-              (random() - 0.5) * 0.2,
-              (random() - 0.5) * 0.3,
-            ),
-          );
-          const current = addNode(position, 0.022 + random() * 0.018);
-          addEdge(previous, current);
-          previous = current;
+      filamentSpines.forEach(({ from, to, count, bend }) => {
+        const start = halos[from].position;
+        const end = halos[to].position;
+        const control = start.clone().lerp(end, 0.5).add(bend);
+        const flow = clusterVelocities[from].clone().lerp(clusterVelocities[to], 0.5);
+        for (let step = 0; step < count; step++) {
+          const t = (step + 0.2 + random() * 0.6) / count;
+          const u = 1 - t;
+          const position = start.clone().multiplyScalar(u * u);
+          position.addScaledVector(control, 2 * u * t);
+          position.addScaledVector(end, t * t);
+          position.add(randomVector(0.08 + random() * 0.12));
+          const clump = step % 4 === 0 ? 0.009 : 0;
+          addNode(position, 0.014 + random() * 0.021 + clump, localVelocity(flow, 0.003));
         }
-        addEdge(previous, centerIndices[to]);
-      }
+      });
 
-      for (let i = 0; i < 8; i++) {
-        addNode(
-          new THREE.Vector3(
+      for (let i = 0; i < 6; i++) {
+        let position: THREE.Vector3;
+        do {
+          position = new THREE.Vector3(
+            (random() - 0.5) * 3.8,
             (random() - 0.5) * 3.5,
-            (random() - 0.5) * 3.25,
-            (random() - 0.5) * 1.8,
-          ),
-          0.018 + random() * 0.015,
+            (random() - 0.5) * 2.2,
+          );
+        } while (position.length() < 0.9);
+        addNode(
+          position,
+          0.013 + random() * 0.014,
+          randomVector(2).normalize().multiplyScalar(0.004 + random() * 0.003),
         );
       }
 
-      nodes.forEach((node, i) => {
-        const nearest = nodes
-          .map((other, j) => ({ j, distance: node.position.distanceTo(other.position) }))
-          .filter((item) => item.j !== i && item.distance < 0.68)
-          .sort((a, b) => a.distance - b.distance)
-          .slice(0, 2);
-        nearest.forEach(({ j }) => addEdge(i, j));
-      });
+      const delta = new THREE.Vector3();
+      const neighborCount = (index: number) =>
+        index < halos.length ? 4 : index % 4 === 0 ? 3 : 2;
+      const rebuildEdges = () => {
+        edges.length = 0;
+        nodes.forEach((node) => { node.degree = 0; });
+        const edgeKeys = new Set<string>();
 
-      const linePositions: number[] = [];
-      const lineColors: number[] = [];
-      const ink = new THREE.Color('#1d1d1f');
-      const muted = new THREE.Color('#86868b');
-      const sampleCurve = (edge: WebEdge, t: number, target: THREE.Vector3) => {
-        const start = nodes[edge.a].position;
-        const end = nodes[edge.b].position;
+        nodes.forEach((node, i) => {
+          const nearest = nodes
+            .map((other, j) => ({
+              j,
+              distance: periodicDelta(node.position, other.position, delta).lengthSq(),
+            }))
+            .filter((item) => item.j !== i && item.distance < LINK_DISTANCE * LINK_DISTANCE)
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, neighborCount(i));
+
+          nearest.forEach(({ j, distance }) => {
+            const key = i < j ? `${i}:${j}` : `${j}:${i}`;
+            if (edgeKeys.has(key)) return;
+            edgeKeys.add(key);
+            periodicDelta(node.position, nodes[j].position, delta);
+            let bend = bendCache.get(key);
+            if (!bend) {
+              const axis = randomVector(2).cross(delta);
+              if (axis.lengthSq() < 1e-8) axis.set(0, 1, 0);
+              else axis.normalize();
+              bend = axis.multiplyScalar(Math.sqrt(distance) * (random() - 0.5) * 0.2);
+              bend.z += (random() - 0.5) * Math.sqrt(distance) * 0.06;
+              bendCache.set(key, bend);
+            }
+            edges.push({ a: i, b: j, key, bend, length: Math.sqrt(distance) });
+            node.degree++;
+            nodes[j].degree++;
+          });
+        });
+      };
+      rebuildEdges();
+
+      const edgeDelta = new THREE.Vector3();
+      const edgeStart = new THREE.Vector3();
+      const edgeEnd = new THREE.Vector3();
+      const edgeControl = new THREE.Vector3();
+      const sampleCurve = (edge: WebEdge, t: number, target: THREE.Vector3, mirror = false) => {
+        const a = nodes[edge.a].position;
+        const b = nodes[edge.b].position;
+        periodicDelta(a, b, edgeDelta);
+        if (mirror) {
+          edgeEnd.copy(b);
+          edgeStart.copy(b).sub(edgeDelta);
+        } else {
+          edgeStart.copy(a);
+          edgeEnd.copy(a).add(edgeDelta);
+        }
+        edgeControl.copy(edgeStart).addScaledVector(edgeDelta, 0.5).add(edge.bend);
         const u = 1 - t;
         target.set(0, 0, 0);
-        target.addScaledVector(start, u * u);
-        target.addScaledVector(edge.control, 2 * u * t);
-        target.addScaledVector(end, t * t);
+        target.addScaledVector(edgeStart, u * u);
+        target.addScaledVector(edgeControl, 2 * u * t);
+        target.addScaledVector(edgeEnd, t * t);
         return target;
       };
-      const pointA = new THREE.Vector3();
-      const pointB = new THREE.Vector3();
-      edges.forEach((edge) => {
-        const color = ink.clone().lerp(muted, Math.min(0.45, edge.length * 0.16));
-        for (let step = 0; step < 12; step++) {
-          sampleCurve(edge, step / 12, pointA);
-          sampleCurve(edge, (step + 1) / 12, pointB);
-          linePositions.push(pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z);
-          lineColors.push(color.r, color.g, color.b, color.r, color.g, color.b);
-        }
-      });
+
+      const maxEdges = Math.ceil(
+        nodes.reduce((sum, _, index) => sum + neighborCount(index), 0) / 2,
+      );
+      const maxLineVertices = maxEdges * 2 * CURVE_SEGMENTS * 2;
+      const linePositions = new Float32Array(maxLineVertices * 3);
+      const lineColors = new Float32Array(maxLineVertices * 3);
       const lineGeometry = new THREE.BufferGeometry();
-      lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-      lineGeometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 3));
+      const linePositionAttribute = new THREE.BufferAttribute(linePositions, 3);
+      const lineColorAttribute = new THREE.BufferAttribute(lineColors, 3);
+      linePositionAttribute.setUsage(THREE.DynamicDrawUsage);
+      lineColorAttribute.setUsage(THREE.DynamicDrawUsage);
+      lineGeometry.setAttribute('position', linePositionAttribute);
+      lineGeometry.setAttribute('color', lineColorAttribute);
       const lineMaterial = new THREE.LineBasicMaterial({
         vertexColors: true,
         transparent: true,
@@ -216,7 +280,44 @@
         depthWrite: false,
       });
       const filaments = new THREE.LineSegments(lineGeometry, lineMaterial);
+      filaments.frustumCulled = false;
       web.add(filaments);
+
+      const ink = new THREE.Color('#1d1d1f');
+      const muted = new THREE.Color('#86868b');
+      const pointA = new THREE.Vector3();
+      const pointB = new THREE.Vector3();
+      const edgeColor = new THREE.Color();
+      const updateFilaments = () => {
+        let vertex = 0;
+        edges.forEach((edge) => {
+          periodicDelta(nodes[edge.a].position, nodes[edge.b].position, delta);
+          const wrapped =
+            Math.abs(nodes[edge.b].position.x - nodes[edge.a].position.x - delta.x) > 0.001 ||
+            Math.abs(nodes[edge.b].position.y - nodes[edge.a].position.y - delta.y) > 0.001 ||
+            Math.abs(nodes[edge.b].position.z - nodes[edge.a].position.z - delta.z) > 0.001;
+          edgeColor.copy(ink).lerp(muted, Math.min(0.45, edge.length * 0.16));
+          for (let copy = 0; copy < (wrapped ? 2 : 1); copy++) {
+            for (let step = 0; step < CURVE_SEGMENTS; step++) {
+              sampleCurve(edge, step / CURVE_SEGMENTS, pointA, copy === 1);
+              sampleCurve(edge, (step + 1) / CURVE_SEGMENTS, pointB, copy === 1);
+              for (const point of [pointA, pointB]) {
+                const offset = vertex * 3;
+                linePositions[offset] = point.x;
+                linePositions[offset + 1] = point.y;
+                linePositions[offset + 2] = point.z;
+                lineColors[offset] = edgeColor.r;
+                lineColors[offset + 1] = edgeColor.g;
+                lineColors[offset + 2] = edgeColor.b;
+                vertex++;
+              }
+            }
+          }
+        });
+        lineGeometry.setDrawRange(0, vertex);
+        linePositionAttribute.needsUpdate = true;
+        lineColorAttribute.needsUpdate = true;
+      };
 
       const nodeGeometry = new THREE.SphereGeometry(1, 12, 8);
       const nodeMaterial = new THREE.MeshStandardMaterial({
@@ -225,15 +326,28 @@
         metalness: 0.05,
       });
       const nodeMesh = new THREE.InstancedMesh(nodeGeometry, nodeMaterial, nodes.length);
+      nodeMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      nodeMesh.frustumCulled = false;
       const matrix = new THREE.Matrix4();
       const quaternion = new THREE.Quaternion();
       const scale = new THREE.Vector3();
-      nodes.forEach((node, i) => {
-        scale.setScalar(node.radius);
-        matrix.compose(node.position, quaternion, scale);
-        nodeMesh.setMatrixAt(i, matrix);
-      });
-      nodeMesh.instanceMatrix.needsUpdate = true;
+      const updateNodes = (dt: number) => {
+        nodes.forEach((node, i) => {
+          if (dt > 0) {
+            node.position.addScaledVector(node.velocity, dt);
+            node.position.set(
+              wrap(node.position.x, BOX.x),
+              wrap(node.position.y, BOX.y),
+              wrap(node.position.z, BOX.z),
+            );
+          }
+          scale.setScalar(node.radius);
+          matrix.compose(node.position, quaternion, scale);
+          nodeMesh.setMatrixAt(i, matrix);
+        });
+        nodeMesh.instanceMatrix.needsUpdate = true;
+      };
+      updateNodes(0);
       web.add(nodeMesh);
 
       const glowCanvas = document.createElement('canvas');
@@ -247,15 +361,11 @@
       glowContext.fillStyle = gradient;
       glowContext.fillRect(0, 0, 64, 64);
       const glowTexture = new THREE.CanvasTexture(glowCanvas);
-      const hubNodes = nodes.filter((node) => node.degree >= 5);
+      const glowPositions = new Float32Array(nodes.length * 3);
       const glowGeometry = new THREE.BufferGeometry();
-      glowGeometry.setAttribute(
-        'position',
-        new THREE.Float32BufferAttribute(
-          hubNodes.flatMap((node) => [node.position.x, node.position.y, node.position.z]),
-          3,
-        ),
-      );
+      const glowPositionAttribute = new THREE.BufferAttribute(glowPositions, 3);
+      glowPositionAttribute.setUsage(THREE.DynamicDrawUsage);
+      glowGeometry.setAttribute('position', glowPositionAttribute);
       const glowMaterial = new THREE.PointsMaterial({
         color: '#1d1d1f',
         size: 0.43,
@@ -266,12 +376,22 @@
         sizeAttenuation: true,
       });
       const glows = new THREE.Points(glowGeometry, glowMaterial);
+      glows.frustumCulled = false;
+      const updateGlows = () => {
+        let count = 0;
+        nodes.forEach((node) => {
+          if (node.degree < 5) return;
+          glowPositions[count * 3] = node.position.x;
+          glowPositions[count * 3 + 1] = node.position.y;
+          glowPositions[count * 3 + 2] = node.position.z;
+          count++;
+        });
+        glowGeometry.setDrawRange(0, count);
+        glowPositionAttribute.needsUpdate = true;
+      };
+      updateGlows();
       web.add(glows);
 
-      const pulseEdges = edges
-        .map((edge, index) => ({ edge, index, rank: random() }))
-        .sort((a, b) => a.rank - b.rank)
-        .slice(0, 11);
       const pulseGeometry = new THREE.SphereGeometry(1, 8, 6);
       const pulseMaterial = new THREE.MeshBasicMaterial({
         color: '#1d1d1f',
@@ -279,18 +399,45 @@
         opacity: 0.64,
         depthWrite: false,
       });
-      const pulseMesh = new THREE.InstancedMesh(pulseGeometry, pulseMaterial, pulseEdges.length);
-      const pulses = pulseEdges.map(({ edge }, i) => ({
-        edge,
-        t: (i + random()) / pulseEdges.length,
-        speed: 0.024 + random() * 0.026,
-      }));
+      const pulseCount = Math.min(11, edges.length);
+      const pulseMesh = new THREE.InstancedMesh(pulseGeometry, pulseMaterial, pulseCount);
+      pulseMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      pulseMesh.frustumCulled = false;
+      const pulses = Array.from({ length: pulseCount }, (_, i) => {
+        const edgeIndex = Math.floor((i / pulseCount) * edges.length);
+        return {
+          edgeIndex,
+          edgeKey: edges[edgeIndex].key,
+          t: random(),
+          speed: 0.012 + random() * 0.014,
+        };
+      });
       const pulsePosition = new THREE.Vector3();
       const updatePulses = (dt: number) => {
         pulses.forEach((pulse, i) => {
-          if (!reduced) pulse.t = (pulse.t + dt * pulse.speed) % 1;
-          sampleCurve(pulse.edge, pulse.t, pulsePosition);
-          scale.setScalar(0.025);
+          if (edges.length === 0) {
+            scale.setScalar(0);
+          } else {
+            pulse.edgeIndex = Math.min(pulse.edgeIndex, edges.length - 1);
+            if (edges[pulse.edgeIndex].key !== pulse.edgeKey) {
+              const existing = edges.findIndex((edge) => edge.key === pulse.edgeKey);
+              if (existing >= 0) {
+                pulse.edgeIndex = existing;
+              } else {
+                pulse.edgeIndex = Math.floor(random() * edges.length);
+                pulse.edgeKey = edges[pulse.edgeIndex].key;
+                pulse.t = 0;
+              }
+            }
+            if (!reduced) pulse.t += dt * pulse.speed;
+            if (pulse.t >= 1) {
+              pulse.t %= 1;
+              pulse.edgeIndex = Math.floor(random() * edges.length);
+              pulse.edgeKey = edges[pulse.edgeIndex].key;
+            }
+            sampleCurve(edges[pulse.edgeIndex], pulse.t, pulsePosition);
+            scale.setScalar(0.025 * Math.sin(Math.PI * pulse.t));
+          }
           matrix.compose(pulsePosition, quaternion, scale);
           pulseMesh.setMatrixAt(i, matrix);
         });
@@ -298,6 +445,7 @@
       };
       updatePulses(0);
       web.add(pulseMesh);
+      updateFilaments();
 
       let targetX = -0.18;
       let targetY = 0.55;
@@ -380,12 +528,16 @@
       };
       reducedMotion.addEventListener('change', motionChange, { signal });
 
+      // Normal-speed evolution; increase temporarily when testing topology changes.
+      const TIME_SCALE = 1;
       let previousTime = performance.now();
+      let linkClock = 0;
       let frame = 0;
       let disposed = false;
       const tick = (now: number) => {
         if (disposed) return;
         const dt = Math.min((now - previousTime) / 1000, 0.05);
+        const simulationDt = dt * TIME_SCALE;
         previousTime = now;
         if (inView && !document.hidden) {
           if (!dragging) {
@@ -393,7 +545,7 @@
             targetX = THREE.MathUtils.clamp(targetX + velocityX, -1.1, 1.1);
             velocityX *= 0.9;
             velocityY *= 0.9;
-            if (!reduced && now - lastInteraction > 2600) targetY += dt * 0.065;
+            if (!reduced && now - lastInteraction > 3200) targetY += simulationDt * 0.025;
           }
           const difference =
             Math.abs(targetX - currentX) + Math.abs(targetY - currentY) +
@@ -401,7 +553,17 @@
           currentX += (targetX - currentX) * 0.09;
           currentY += (targetY - currentY) * 0.09;
           web.rotation.set(currentX, currentY, 0.08);
-          if (!reduced) updatePulses(dt);
+          if (!reduced) {
+            linkClock += simulationDt;
+            if (linkClock >= LINK_INTERVAL) {
+              rebuildEdges();
+              linkClock %= LINK_INTERVAL;
+            }
+            updateNodes(simulationDt);
+            updateGlows();
+            updatePulses(simulationDt);
+            updateFilaments();
+          }
           if (!reduced || needsRender || difference > 0.00005) {
             renderer.render(scene, camera);
             needsRender = false;

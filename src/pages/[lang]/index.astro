@@ -177,24 +177,97 @@ const hasAffiliation = profile.affiliation[lang] !== '';
       <h2 class="section-title">{t('home.explore')}</h2>
     </div>
     <div class="tile-grid">
-      <a class="tile tile-research tile-wide" href={researchUrl}>
-        <p class="tile-eyebrow">{t('nav.research')}</p>
-        <h3>{t('home.explore.research')}</h3>
-        <p class="tile-sub">{t('home.explore.researchDesc')}</p>
-        <span class="tile-cta">{t('home.tile.more')} ›</span>
-      </a>
+      <div class="tile-wrap tile-wide">
+        <a
+          class="tile tile-research"
+          id="tile-research"
+          href={researchUrl}
+          style="background-image: linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.62)), url('/art/ac-9.jpg')"
+        >
+          <p class="tile-eyebrow">{t('nav.research')}</p>
+          <h3>{t('home.explore.research')}</h3>
+          <p class="tile-sub">{t('home.explore.researchDesc')}</p>
+          <span class="tile-cta">{t('home.tile.more')} ›</span>
+        </a>
+        <a
+          class="tile-credit"
+          id="ac-credit"
+          href="https://www.aesthetic-computation.com/9/"
+          target="_blank"
+          rel="noopener"
+          aria-label="Image source: Aesthetic Computation"
+          title="Aesthetic Computation"
+        >
+          <img src="/art/ac-logo.png" alt="ac." />
+        </a>
+      </div>
       <a class="tile tile-photo" href={photographyUrl}>
         <p class="tile-eyebrow">{t('nav.photography')}</p>
         <h3>{t('home.explore.photography')}</h3>
         <p class="tile-sub">{t('home.explore.photographyDesc')}</p>
         <span class="tile-cta">{t('home.tile.more')} ›</span>
       </a>
-      <a class="tile tile-widgets" href={widgetsUrl}>
-        <p class="tile-eyebrow">{t('nav.widgets')}</p>
-        <h3>{t('home.explore.widgets')}</h3>
-        <p class="tile-sub">{t('home.explore.widgetsDesc')}</p>
-        <span class="tile-cta">{t('home.tile.more')} ›</span>
-      </a>
+      <div class="tile-wrap">
+        <a
+          class="tile tile-widgets"
+          id="tile-widgets"
+          href={widgetsUrl}
+          style="background-image: linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.62)), url('/art/tbo-hs417.png')"
+        >
+          <p class="tile-eyebrow">{t('nav.widgets')}</p>
+          <h3>{t('home.explore.widgets')}</h3>
+          <p class="tile-sub">{t('home.explore.widgetsDesc')}</p>
+          <span class="tile-cta">{t('home.tile.more')} ›</span>
+        </a>
+        <a
+          class="tile-credit tile-credit-tbo"
+          id="tbo-credit"
+          href="https://www.threebodyorbits.com/orbit/hristov2026_hs417_1_1_1"
+          target="_blank"
+          rel="noopener"
+          aria-label="Image source: Three Body Orbits"
+          title="Three Body Orbits"
+        >
+          <span class="tbo-mark" aria-hidden="true"></span>
+          <span class="tbo-name">Three Body Orbits</span>
+        </a>
+      </div>
     </div>
   </section>
 </Base>
+
+<script>
+  const picks = [
+    { img: '/art/ac-9.jpg', url: 'https://www.aesthetic-computation.com/9/' },
+    { img: '/art/ac-53.jpg', url: 'https://www.aesthetic-computation.com/53/' },
+    { img: '/art/ac-50.jpg', url: 'https://www.aesthetic-computation.com/50/' },
+  ];
+  const pick = picks[Math.floor(Math.random() * picks.length)];
+  const tile = document.getElementById('tile-research');
+  if (tile) {
+    tile.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.62)), url('${pick.img}')`;
+  }
+  const credit = document.getElementById('ac-credit');
+  if (credit) {
+    credit.href = pick.url;
+    credit.title = `Image: Aesthetic Computation ${new URL(pick.url).pathname}`;
+  }
+
+  const tboPicks = [
+    { img: '/art/tbo-hs417.png', url: 'https://www.threebodyorbits.com/orbit/hristov2026_hs417_1_1_1' },
+    { img: '/art/tbo-hs667.png', url: 'https://www.threebodyorbits.com/orbit/hristov2026_hs667_1_1_1' },
+    { img: '/art/tbo-freefall.png', url: 'https://www.threebodyorbits.com/orbit/freefall_part1_f310_80_6' },
+    { img: '/art/tbo-ibic.png', url: 'https://www.threebodyorbits.com/orbit/ib_ic_equalmass_i_b_75_i_c_' },
+    { img: '/art/tbo-rosette.png', url: 'https://www.threebodyorbits.com/orbit/rosette2026_a_r9of14_d025000' },
+  ];
+  const tboPick = tboPicks[Math.floor(Math.random() * tboPicks.length)];
+  const wTile = document.getElementById('tile-widgets');
+  if (wTile) {
+    wTile.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.62)), url('${tboPick.img}')`;
+  }
+  const tboCredit = document.getElementById('tbo-credit');
+  if (tboCredit) {
+    tboCredit.href = tboPick.url;
+    tboCredit.title = `Orbit: Three Body Orbits ${new URL(tboPick.url).pathname}`;
+  }
+</script>

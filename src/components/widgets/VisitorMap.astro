@@ -1,0 +1,126 @@
+---
+import { API_BASE } from '../../data/salon';
+import { useTranslations } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+
+let snapshot: { points: unknown[]; total: number; cities: number } = { points: [], total: 0, cities: 0 };
+if (!import.meta.env.DEV) {
+  try {
+    const r = await fetch(`${API_BASE}/visitors`, { signal: AbortSignal.timeout(6000) });
+    if (r.ok) snapshot = await r.json();
+  } catch {
+    // 构建时拿不到后端就留空，页面加载后再实时取
+  }
+}
+---
+
+<section class="widget widget-visitor-map">
+  <div class="widget-head">
+    <h3>{t('widgets.visitor')}</h3>
+    <p>{t('widgets.visitorDesc')}</p>
+  </div>
+  <div class="globe-wrap">
+    <canvas id="visitor-globe" aria-label={t('widgets.visitor')}></canvas>
+    <p class="globe-hint">{t('widgets.visitorHint')}</p>
+  </div>
+  <script
+    type="application/json"
+    id="visitor-data"
+    set:html={JSON.stringify({ api: API_BASE, snapshot }).replace(/</g, '\\u003c')}
+  />
+</section>
+
+<script>
+  import createGlobe from 'cobe';
+  import { displayMarkers } from '../../lib/visitorCities';
+
+  const cfg = JSON.parse(document.getElementById('visitor-data').textContent);
+  const canvas = document.getElementById('visitor-globe') as HTMLCanvasElement;
+  const wrap = canvas.parentElement as HTMLElement;
+
+  type Point = { city: string; country: string; lat: number; lng: number; n: number };
+  let points: Point[] = cfg.snapshot.points || [];
+
+  const markers = () =>
+    displayMarkers(points).map((p) => ({
+      location: [p.lat, p.lng] as [number, number],
+      size: 0.03 + Math.min(p.n, 25) * 0.0025,
+    }));
+
+  const dims = () => {
+    const w = wrap.clientWidth;
+    const h = Math.round(Math.min(440, Math.max(280, w * 0.5)));
+    return { w, h };
+  };
+  let { w, h } = dims();
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
+
+  let phi = 1.9;
+  let theta = 0.25;
+  const globe = createGlobe(canvas, {
+    devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+    width: w * 2,
+    height: h * 2,
+    phi,
+    theta,
+    dark: 0,
+    diffuse: 1.2,
+    mapSamples: 16000,
+    mapBrightness: 0.9,
+    baseColor: [1, 1, 1],
+    markerColor: [1, 0.58, 0],
+    glowColor: [0.88, 0.89, 0.92],
+    markerElevation: 0,
+    markers: markers(),
+  });
+
+  let dragging = false;
+  let lastX = 0;
+  let lastY = 0;
+  const tick = () => {
+    if (!dragging) phi += 0.0035;
+    globe.update({ phi, theta });
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+
+  canvas.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    phi += (e.clientX - lastX) * 0.005;
+    theta = Math.max(-0.5, Math.min(0.8, theta - (e.clientY - lastY) * 0.003));
+    lastX = e.clientX;
+    lastY = e.clientY;
+  });
+  for (const ev of ['pointerup', 'pointercancel']) canvas.addEventListener(ev, () => (dragging = false));
+
+  new ResizeObserver(() => {
+    const d = dims();
+    if (d.w === w && d.h === h) return;
+    w = d.w;
+    h = d.h;
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+    globe.update({ width: w * 2, height: h * 2 });
+  }).observe(wrap);
+
+  const apply = (d: { points: Point[] }) => {
+    points = d.points;
+    globe.update({ markers: markers() });
+  };
+  const pinged = sessionStorage.getItem('visitor-ping');
+  if (!pinged) sessionStorage.setItem('visitor-ping', '1');
+  fetch(`${cfg.api}/visitors`, { method: pinged ? 'GET' : 'POST' })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d) => d && apply(d))
+    .catch(() => {});
+</script>

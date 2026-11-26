@@ -2,7 +2,7 @@
 import SalonBase from '../../../layouts/SalonBase.astro';
 import { getLangFromUrl } from '../../../i18n/utils';
 import { salonUi } from '../../../i18n/salon';
-import { salon, SALON_YEARS, SALON_API } from '../../../data/salon';
+import { salon, SALON_YEARS, API_BASE } from '../../../data/salon';
 import { monthKey, totalMinutes } from '../../../lib/salon';
 import type { Lang } from '../../../i18n/ui';
 
@@ -48,7 +48,7 @@ for (const year of SALON_YEARS) {
   <script
     type="application/json"
     id="salon-cal-data"
-    set:html={JSON.stringify({ stats, years: SALON_YEARS, api: SALON_API }).replace(/</g, '\\u003c')}
+    set:html={JSON.stringify({ stats, years: SALON_YEARS, api: API_BASE }).replace(/</g, '\\u003c')}
   />
 </SalonBase>
 

@@ -1295,6 +1295,33 @@ main {
   background: rgba(191, 90, 242, 0.06);
 }
 
+.widget-visitor-map {
+  background: rgba(48, 209, 88, 0.06);
+  margin-top: 1.25rem;
+}
+
+.globe-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.globe-wrap canvas {
+  display: block;
+  cursor: grab;
+  touch-action: none;
+}
+
+.globe-wrap canvas:active {
+  cursor: grabbing;
+}
+
+.globe-hint {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: var(--faint);
+}
+
 .card-salon {
   background: rgba(255, 149, 0, 0.08);
 }

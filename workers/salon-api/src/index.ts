@@ -1,4 +1,5 @@
 import { checkFields, checkNew, checkEdit, hashId, totalMinutes } from '../../../src/lib/salon';
+import { mergeVisitors, type VisitorPoint } from '../../../src/lib/visitors';
 
 interface StoredEntry {
   idHash: string;
@@ -153,6 +154,30 @@ export default {
         stats[key.name.slice(2)] = { n: entries.length, total: totalMinutes(entries) };
       }
       return json(env, origin, { stats });
+    }
+
+    if (parts[0] === 'visitors' && (request.method === 'GET' || request.method === 'POST')) {
+      const raw = await env.SALON_KV.get('v:agg');
+      const agg: VisitorPoint[] = raw ? JSON.parse(raw) : [];
+      if (request.method === 'POST') {
+        const cf = (request as Request & { cf?: { city?: string; region?: string; country?: string; latitude?: string; longitude?: string } }).cf;
+        const lat = Math.round(Number(cf?.latitude) * 100) / 100;
+        const lng = Math.round(Number(cf?.longitude) * 100) / 100;
+        if (cf && Number.isFinite(lat) && Number.isFinite(lng)) {
+          const city = cf.city || cf.region || cf.country || '';
+          const country = cf.country || '';
+          const hit = agg.find((p) => p.city === city && p.country === country);
+          if (hit) {
+            hit.n += 1;
+            hit.lat = lat;
+            hit.lng = lng;
+          } else {
+            agg.push({ city, country, lat, lng, n: 1 });
+          }
+          await env.SALON_KV.put('v:agg', JSON.stringify(agg));
+        }
+      }
+      return json(env, origin, mergeVisitors(agg));
     }
 
     if (parts[0] === 'salon' && MONTH_RE.test(parts[1] ?? '')) {

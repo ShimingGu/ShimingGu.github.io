@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import CosmoCalc from '../../components/widgets/CosmoCalc.astro';
 import GroupPicker from '../../components/widgets/GroupPicker.astro';
+import VisitorMap from '../../components/widgets/VisitorMap.astro';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { profile } from '../../data/profile';
 import { widgets } from '../../data/widgets';
@@ -56,5 +57,7 @@ const registry = {
       <p>{t('widgets.add')}</p>
       <p class="hint">{t('widgets.addDesc')}</p>
     </div>
+
+    <VisitorMap lang={lang} />
   </section>
 </Base>

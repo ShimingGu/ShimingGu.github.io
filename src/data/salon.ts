@@ -27,7 +27,7 @@ export const organizerEmail = '';
 // 开发环境走 wrangler dev --remote 的本地隧道（workers.dev 在大陆直连被 SNI 阻断）；
 // 生产走 workers.dev（观众默认有国际线 / ECH 浏览器）。
 const isDev = (import.meta as { env?: { DEV?: boolean } }).env?.DEV === true;
-export const SALON_API = isDev
+export const API_BASE = isDev
   ? 'http://localhost:8787'
   : 'https://salon-api.shiminggu.workers.dev';
 

@@ -52,7 +52,7 @@ if (!import.meta.env.DEV) {
 
   const dims = () => {
     const w = wrap.clientWidth;
-    const h = Math.round(Math.min(440, Math.max(280, w * 0.5)));
+    const h = Math.round(Math.min(490, Math.max(300, w * 0.57)));
     return { w, h };
   };
   let { w, h } = dims();
@@ -67,13 +67,14 @@ if (!import.meta.env.DEV) {
     height: h * 2,
     phi,
     theta,
+    scale: 1.17,
     dark: 0,
     diffuse: 1.2,
     mapSamples: 16000,
     mapBrightness: 0.9,
     baseColor: [1, 1, 1],
     markerColor: [1, 0.58, 0],
-    glowColor: [0.88, 0.89, 0.92],
+    glowColor: [0.951, 0.989, 0.961],
     markerElevation: 0,
     markers: markers(),
   });
@@ -97,7 +98,7 @@ if (!import.meta.env.DEV) {
   canvas.addEventListener('pointermove', (e) => {
     if (!dragging) return;
     phi += (e.clientX - lastX) * 0.005;
-    theta = Math.max(-0.5, Math.min(0.8, theta - (e.clientY - lastY) * 0.003));
+    theta = Math.max(-0.5, Math.min(0.8, theta + (e.clientY - lastY) * 0.003));
     lastX = e.clientX;
     lastY = e.clientY;
   });

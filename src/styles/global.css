@@ -1298,9 +1298,15 @@ main {
 .widget-visitor-map {
   background: rgba(48, 209, 88, 0.06);
   margin-top: 1.25rem;
+  padding: 1rem 1.75rem;
+}
+
+.widget-visitor-map .widget-head {
+  margin-bottom: 0.75rem;
 }
 
 .globe-wrap {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1317,7 +1323,10 @@ main {
 }
 
 .globe-hint {
-  margin: 0.15rem 0 0;
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  margin: 0;
   font-size: 0.75rem;
   color: var(--faint);
 }

@@ -34,7 +34,7 @@ if (!import.meta.env.DEV) {
 </section>
 
 <script>
-  import createGlobe from 'cobe';
+  import createGlobe from '../../lib/cobe.js';
   import { displayMarkers } from '../../lib/visitorCities';
 
   const cfg = JSON.parse(document.getElementById('visitor-data').textContent);
@@ -52,7 +52,7 @@ if (!import.meta.env.DEV) {
 
   const dims = () => {
     const w = wrap.clientWidth;
-    const h = Math.round(Math.min(490, Math.max(300, w * 0.57)));
+    const h = Math.round(Math.min(491, Math.max(300, w * 0.572)));
     return { w, h };
   };
   let { w, h } = dims();
@@ -74,7 +74,7 @@ if (!import.meta.env.DEV) {
     mapBrightness: 0.9,
     baseColor: [1, 1, 1],
     markerColor: [1, 0.58, 0],
-    glowColor: [0.951, 0.989, 0.961],
+    glowColor: [0.88, 0.89, 0.92],
     markerElevation: 0,
     markers: markers(),
   });
